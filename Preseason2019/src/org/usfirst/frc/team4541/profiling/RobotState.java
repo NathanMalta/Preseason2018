@@ -102,7 +102,9 @@ public class RobotState {
 	  return heading; //in radians
 	}
 
-
+	public void start() {
+		this.updatePos(newRTravel, newLTravel, newHeading);
+	}
 
 	
 	
