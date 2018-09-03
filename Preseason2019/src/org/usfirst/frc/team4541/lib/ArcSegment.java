@@ -32,7 +32,7 @@ public class ArcSegment implements Segment {
 		deltaPose = new Point(deltaPose.getX() * scale, deltaPose.getY() * scale);
 		
 		if (Point.cross(deltaPose, deltaStart) * Point.cross(deltaPose, deltaEnd) < 0) {
-			return new Point(centerPoint.getX() + deltaPose.getX(), centerPoint.getY() + deltaPose.getY());
+			return Point.addPoints(centerPoint, deltaPose);
 		} else {
 			Point startDist = Point.getDelta(deltaPose, startPoint);
 			Point endDist = Point.getDelta(deltaPose, endPoint);

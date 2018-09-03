@@ -50,4 +50,37 @@ public class Point {
 	public static Point getDelta(Point a, Point b) {
 		return new Point(b.getX() - a.getX(), b.getY() - a.getY());
 	}
+	
+	/*
+	 * Add two points together, then return the sum
+	 * 
+	 * @param a the first point
+	 * @param b the second point
+	 */
+	public static Point addPoints(Point a, Point b) {
+		return new Point(a.getX() + b.getX(), a.getY() + b.getY());
+	}
+	
+	/*
+	 * return the distance between two points
+	 * 
+	 * @param a the first point
+	 * @param b the second point
+	 */
+	public static double getDistance(Point a, Point b) {
+		return Math.hypot(b.getX() - a.getX(), b.getY() - a.getY());
+	}
+	
+	/*
+	 * return the angle the robot needs to get from its current position to a desired position
+	 * (angle between two points and x-axis)
+	 * 
+	 * @param currentPos the current position of the robot
+	 * @param desiredPos the point we want to be at
+	 */
+	public static double getAngleNeeded(Point currentPos, Point desiredPos) {
+		double dx = desiredPos.getX() - currentPos.getX();
+		double dy = desiredPos.getY() - currentPos.getY();
+		return Math.atan2(dx, dy);
+	}
 }
