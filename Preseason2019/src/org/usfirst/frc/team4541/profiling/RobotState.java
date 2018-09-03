@@ -42,9 +42,69 @@ public class RobotState {
 		lWheelTravel = newLTravel;
 
 	}
-	
+
+	/*
+	 * Effectively undoes the rotation by an angle; 
+	 * If a line segment is rotated by the angle and then its inverse, 
+	 * it will have the same heading as before being rotated
+	*/
 	public double getInverseOfAngle(double angleRad) {
-		return atan2((-1 *Math.sin(angleRad)), Math.cos(angleRad));
+		return Math.atan2((-1 * Math.sin(angleRad)), Math.cos(angleRad));
 	}
+
+	/*
+	 * Rotates an a1 by a2 using a rotation matrix 
+	 */
+	public double rotate(double a1, double a2) {
+		return Math.atan2(Math.cos(a1) * Math.sin(a2) + Math.sin(a1) * Math.cos(a2),
+				Math.cos(a1) * Math.cos(a2) - Math.sin(a1) * Math.sin(a2));
+	}
+	
+	/*
+	 * Converts the number of wheel rotations into the distance traveled by the robot in inches
+	 */
+	public double rotationToInches(double rot) {
+	  return rot / rotationsPerInch;
+	}
+	
+	/*
+	 * Get the absolute x position of the robot from dead reckoning
+	 */
+	public double getXPos() {
+	  return rotationToInches(xPos); //in inches
+	}
+	
+	/*
+	 * Get the absolute y position of the robot from dead reckoning
+	 */
+	public double getYPos() {
+	  return rotationToInches(yPos); //in inches
+	}
+	
+	/*
+	 * Get the net distance traveled by the right wheels of the robot
+	 */
+	public double getRightWheelTravel() {
+	  return rWheelTravel; //in inches
+	}
+
+	/*
+	 * Get the net distance traveled by the left wheels of the robot
+	 */
+	public double getLeftWheelTravel() {
+	  return lWheelTravel; //in inches
+	}
+
+	/*
+	 * Get the heading of the robot (from the gyroscope at the time of the last update)
+	 */
+	public double getHeading() {
+	  return heading; //in radians
+	}
+
+
+
+	
+	
 
 }
