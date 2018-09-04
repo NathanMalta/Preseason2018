@@ -5,14 +5,20 @@ import org.usfirst.frc.team4541.robot.Constants;
 public class RobotPos {
 	Point position;
 	double heading; //heading in radians
+	double velocity;
 	
-	public RobotPos(double robotX, double robotY, double heading) { //heading in radians
-		this(new Point(robotX, robotY), heading);
+	public RobotPos(double robotX, double robotY, double heading, double velocity) { //heading in radians
+		this(new Point(robotX, robotY), heading, velocity);
 	}
 	
-	public RobotPos(Point pos, double heading) { // heading in radians
+	public RobotPos(Point pos, double heading, double velocity) { // heading in radians
 		this.position = pos;
 		this.heading = heading;
+		this.velocity = velocity;
+	}
+	
+	public double getVelocity() {
+		return this.velocity;
 	}
 	
 	public Point getLookaheadPoint() { // Incorporate velocity later?

@@ -83,4 +83,14 @@ public class Point {
 		double dy = desiredPos.getY() - currentPos.getY();
 		return Math.atan2(dx, dy);
 	}
+	
+	public static double getAngleForArc(Point startPoint, Point endPoint, Point centerPoint) {
+		// get the three sides of the triangle
+		double a = Point.getDistance(centerPoint, startPoint);
+		double b = Point.getDistance(centerPoint, endPoint);
+		double c = Point.getDistance(startPoint, endPoint);
+		
+		//solve for arc measure with law of cosines
+		return Math.acos((a*a + b*b - c*c) / (2 * a * b));
+	}
 }

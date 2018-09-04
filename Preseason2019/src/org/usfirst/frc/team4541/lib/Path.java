@@ -6,9 +6,11 @@ import org.usfirst.frc.team4541.robot.Constants;
 public class Path {
 	ArrayList<Segment> segmentList = new ArrayList<Segment>();
 	boolean didFinish;
+	VelocityManager manager;
 	
 	public Path() {
 		didFinish = false;
+		manager = new VelocityManager(Constants.kMaxAccel, Constants.kMaxJerk);
 	}
 	
 	public void addSegment(Segment segment) {
@@ -31,7 +33,7 @@ public class Path {
 		}
 		
 		double headingRequired = Point.getAngleNeeded(currentPos, lookahead);
-		double velocityRequired = 0; //TODO: implement
+		double velocityRequired = manager.getVelocityTarget(currentSegment, robotPos);
 		
 		return new RobotCmd(headingRequired, velocityRequired);
 	}

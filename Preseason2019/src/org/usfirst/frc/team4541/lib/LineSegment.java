@@ -5,9 +5,19 @@ public class LineSegment implements Segment {
 	private Point startPoint;
 	private Point endPoint;
 	
-	public LineSegment(Point startPoint, Point endPoint) {
+	double maxVel;
+	double endVel;
+	
+	public LineSegment(Point startPoint, Point endPoint, double maxVel, double endVel) {
 		this.startPoint = startPoint;
 		this.endPoint = endPoint;
+		
+		this.maxVel = maxVel;
+		this.endVel = endVel;
+	}
+	
+	public LineSegment(Point startPoint, Point endPoint, double maxVel) {
+		this(startPoint, endPoint, maxVel, maxVel);
 	}
 	
 	/*
@@ -60,4 +70,19 @@ public class LineSegment implements Segment {
 		return this.endPoint;
 	}
 	
+	@Override
+	public double getDistanceToEndpoint(Point lookaheadPos) {
+		return Point.getDistance(lookaheadPos, this.endPoint); 
+	}
+
+	@Override
+	public double getMaxVelocity() {
+		return this.maxVel;
+	}
+
+	@Override
+	public double getEndVelocity() {
+ 		return this.endVel;
+	}
+
 }

@@ -8,4 +8,10 @@ public interface Segment {
 	
 	public Point getEndPoint();
 	
+	public double getDistanceToEndpoint(Point lookaheadPos);
+	
+	public double getMaxVelocity();
+	
+	public double getEndVelocity();
+	
 }

@@ -1,5 +1,7 @@
 package org.usfirst.frc.team4541.lib;
 
+import org.usfirst.frc.team4541.robot.Constants;
+
 public class PathTest {
 	
 	/*
@@ -7,12 +9,19 @@ public class PathTest {
 	 * https://www.desmos.com/calculator/qdsqwrsrke
 	 */
 	public static void main(String[] args) {
-//		Segment testSegment = new LineSegment(new Point(-2.5, 6.7), new Point(-4.2, 10));
-		Segment testSegment = new ArcSegment(new Point(0, 1), new Point(1, 0), new Point(0, 0));
+//		Segment testSegment = new LineSegment(new Point(-2.5, 6.7), new Point(-4.2, 10), 0);
+		Segment testSegment = new ArcSegment(new Point(2, 0), new Point(0, -2), new Point(0, 0), 0);
 		
-		Point testPoint = new Point(0.5, 0.5);
-		System.out.println("closest point:" + testSegment.getClosestPointOnSegment(testPoint));
-
+		Point testPoint = new Point(1, -1);
+		Point lookahead = testSegment.getClosestPointOnSegment(testPoint);
+		
+		System.out.println("closest point:" + lookahead);
+		System.out.println("dist 1:" + testSegment.getDistanceToEndpoint(testSegment.getStartPoint()));
+		System.out.println("dist 2:" + testSegment.getDistanceToEndpoint(lookahead));
+		
+		VelocityManager manager = new VelocityManager(Constants.kMaxAccel, Constants.kMaxJerk);
+		double distNeeded = manager.getDistanceNeededToAccel(30, 0);
+		System.out.println(distNeeded);
 	}
 
 }
