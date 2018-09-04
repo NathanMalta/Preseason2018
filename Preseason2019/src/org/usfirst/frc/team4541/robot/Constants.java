@@ -7,4 +7,9 @@ public class Constants { //TODO: play with these values once we get a robot
 	public static double kMaxAccel = 24; //in inches/sec^2; the max acceleration the robot can be commanded to experience when traveling a path
 	public static double kMaxJerk = 24; //in inches/sec^3; the max jerk the robot can be commanded to experience when traveling a path
 	public static double defaultDt = 0.02; // in seconds; the default dt for pathfinding calculations
+	
+	public static final double kNeutralDeadband = 0.01;
+	public static final int kTimeoutMs = 10;
+	public static final double kSensorUnitsPerRotation = 854.3; //pulses per foot 854.3 math; 876.7 experimentally, 848.18- 4 times 64
+	
 }
