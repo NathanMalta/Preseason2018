@@ -26,16 +26,12 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 			// update dt based on time elapsed since last update
 			this.updateDt();
 		}
-		
 		if (this.shouldAccelToEndPoint(segment, state)) {
 			//The robot must accelerate/decelerate to reach the velocity desired by the segment's endpoint
 			return this.getNextVelocity(state.getVelocity(), segment.getEndVelocity());
-		} else if (this.shouldAccelToMaxVel(segment, state)) {
-			//The robot must accelerate to reach the max speed of the path
-			return this.getNextVelocity(state.getVelocity(), segment.getMaxVelocity());
 		} else {
-			//The robot is currently at the max speed of the path and doesn't need to change
-			return segment.getMaxVelocity();
+			//The robot must accelerate/decelerate to reach the max speed of the path
+			return this.getNextVelocity(state.getVelocity(), segment.getMaxVelocity());
 		}
 	}
 	
@@ -47,16 +43,6 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 	 */
 	public boolean shouldAccelToEndPoint(Segment segment, RobotPos state) {
 		return this.getDistanceRemaining(segment, state) <= this.getDistanceNeededToAccel(state.getVelocity(), segment.getEndVelocity());
-	}
-	
-	/*
-	 * returns if the robot should accelerate/decelerate to get to the max velocity of the segment
-	 * 
-	 * @param segment: the current segment the robot is following
-	 * @param state: the current position + velocity of the robot
-	 */
-	public boolean shouldAccelToMaxVel(Segment segment, RobotPos state) {
-		return state.getVelocity() < segment.getMaxVelocity();
 	}
 	
 	/*
@@ -88,7 +74,7 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 	 * @param state: the current position + velocity of the robot
 	 */
 	public double getDistanceRemaining(Segment segment, RobotPos state) {
-		return segment.getDistanceToEndpoint(state.getLookaheadPoint());
+		return segment.getDistanceToEndpoint(segment.getClosestPointOnSegment(state.getLookaheadPoint()));
 	}
 	
 	/*
