@@ -8,8 +8,8 @@ public class Constants { //TODO: play with these values once we get a robot
 	public static final double kMaxJerk = 6; //(NOT CURRENTLY USED) in inches/sec^3; the max jerk the robot can be commanded to experience when traveling a path
 	public static final double kDefaultDt = 0.02; // in seconds; the default dt for pathfinding calculations
 	
-	public static final double kTurnAccelCoefficient = 0.1; // the percent of acceleration dedicated to turning per radian of angular error
-	public static final double kTurnVelCoefficient = 0.1; // the percent of velocity that will be used as a differential per ft/sec of differential error
+	public static final double kTurnAccelCoefficient = 0.1; // the percent of acceleration dedicated to turning per ft/sec of differential error - creates max turning accel
+	public static final double kTurnVelCoefficient = 0.1; // the percent of velocity that will be used as a differential per radian of angular error - creates vel diff setpoint
 	
 	public static final double kNeutralDeadband = 0.01;
 	public static final int kTimeoutMs = 10;
