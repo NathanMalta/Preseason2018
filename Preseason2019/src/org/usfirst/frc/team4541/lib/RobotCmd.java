@@ -9,4 +9,12 @@ public class RobotCmd {
 		this.rVelDesired = rVelDesired;
 	}
 	
+	public double getLeftVel() {
+		return this.lVelDesired;
+	}
+	
+	public double getRightVel() {
+		return this.rVelDesired;
+	}
+	
 }

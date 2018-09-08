@@ -24,9 +24,17 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 	 * @param state: the current position + velocity of the robot
 	 */
 	public RobotCmd getVelCmd(Segment segment, RobotPos state) {
+		if (dt == -1) { 
+			//on the first update, setup the dt calculations
+			lastUpdateTime = System.currentTimeMillis();
+			this.dt = Constants.kDefaultDt;
+		} else { 
+			// update dt based on time elapsed since last update
+			this.updateDt();
+		}
 		double overallVel = this.getOverallVelocityTarget(segment, state);
 		double differential = this.getNextDifferential(this.getAccelForTurning(segment, state), state.getDifferential(), 
-				this.getVelocityDifferentialSetpoint(segment, state));
+				this.getVelocityDifferentialSetpoint(segment, state)) / 2;
 		return new RobotCmd(overallVel - differential, overallVel + differential); //TODO: make sure robot turns in the right direction
 	}
 	
@@ -38,14 +46,6 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 	 * @param state: the current position + velocity of the robot
 	 */
 	public double getOverallVelocityTarget(Segment segment, RobotPos state) {
-		if (dt == -1) { 
-			//on the first update, setup the dt calculations
-			lastUpdateTime = System.currentTimeMillis();
-			this.dt = Constants.kDefaultDt;
-		} else { 
-			// update dt based on time elapsed since last update
-			this.updateDt();
-		}
 		double maxSpeedAccel = this.getAccelForSpeedUp(segment, state);
 		if (this.shouldAccelToEndPoint(segment, state)) {
 			//The robot must accelerate/decelerate to reach the velocity desired by the segment's endpoint
@@ -110,7 +110,7 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 	 */
 	public double getNextVelocity(double maxSpeedAccel, double currentVel, double desiredVel) {
 		double delta = desiredVel - currentVel;
-		if (Math.abs(delta) <= maxSpeedAccel) {
+		if (Math.abs(delta) <= (this.dt * maxSpeedAccel)) {
 			// if moving to the desired velocity is allowed within acceleration constraints, 
 			// return the desired velocity
 			return desiredVel;
@@ -131,7 +131,6 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 	 * Update self.dt with the current change in time between updates
 	 */
 	public void updateDt() {
-		this.dt = (System.currentTimeMillis() - lastUpdateTime) / 1000;
 		this.lastUpdateTime = System.currentTimeMillis();
 	}
 	
@@ -166,7 +165,25 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 	public double getVelocityDifferentialSetpoint(Segment segment, RobotPos state) {
 		Point lookahead = segment.getClosestPointOnSegment(state.getLookaheadPoint());
 		double angleError = Point.getAngleNeeded(state.position, lookahead) - state.heading;
-		return state.getVelocity() * Math.min(1, Math.abs(angleError * Constants.kTurnVelCoefficient));
+//		System.out.println(state.heading + "," + Point.getAngleNeeded(state.position, lookahead) + "," + state.getDifferential());
+		while (angleError > Math.PI) {
+			angleError -= Math.PI * 2;
+		}
+		while (angleError < -Math.PI) {
+			angleError += Math.PI * 2;
+		}
+		
+//		double heading = state.heading;
+//		while (heading > Math.PI) {
+//			heading -= Math.PI * 2;
+//		}
+//		while (heading < -Math.PI) {
+//			heading += Math.PI * 2;
+//		}
+		//error, diff setpoint, heading, desired heading
+//		System.out.println(angleError);
+//		System.out.println(angleError + "," + segment.getMaxVelocity() * Math.max(-1, Math.min(1, angleError * Constants.kTurnVelCoefficient)) +"," + heading + "," + Point.getAngleNeeded(state.position, lookahead));
+		return segment.getMaxVelocity() * Math.max(-1, Math.min(1, angleError * Constants.kTurnVelCoefficient));
 	}
 	
 	/*
@@ -179,20 +196,20 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 	 */
 	public double getNextDifferential(double maxTurnAccel, double currentDiff, double desiredDiff) {
 		double delta = desiredDiff - currentDiff;
-		if (Math.abs(delta) <= maxTurnAccel) {
+		if (Math.abs(delta) <= (this.dt * maxTurnAccel)) {
 			// if moving to the desired velocity is allowed within acceleration constraints, 
 			// return the desired velocity
 			return desiredDiff;
 			
 		} else if (delta > 0) {
 			// The next velocity is greater than the current velocity, speed up the robot
-			return desiredDiff + (this.dt * maxTurnAccel);
+			return currentDiff + (this.dt * maxTurnAccel);
 		} else if (delta < 0) {
 			// The next velocity is less than the current velocity, slow down the robot
-			return desiredDiff - (this.dt * maxTurnAccel);
+			return currentDiff - (this.dt * maxTurnAccel);
 		} else {
 			// The next velocity is the same as the current velocity, maintain current velocity
-			return desiredDiff;
+			return currentDiff;
 		}
 	}
 	

@@ -49,4 +49,9 @@ public class RobotPos {
 		// add that point to the robot's current position
 		return Point.addPoints(this.position, lookahead);
 	}
+	
+	@Override
+	public String toString() {
+		return this.position.getX() + "," + this.position.getY() + "," + this.heading + "," + this.lVel + "," + this.rVel; 
+	}
 }

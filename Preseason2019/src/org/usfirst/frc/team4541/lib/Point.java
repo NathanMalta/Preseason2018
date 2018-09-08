@@ -79,9 +79,9 @@ public class Point {
 	 * @param desiredPos the point we want to be at
 	 */
 	public static double getAngleNeeded(Point currentPos, Point desiredPos) {
-		double dx = desiredPos.getX() - currentPos.getX();
-		double dy = desiredPos.getY() - currentPos.getY();
-		return Math.atan2(dx, dy);
+		double dx = currentPos.getX() - desiredPos.getX();
+		double dy = currentPos.getY() - desiredPos.getY();
+		return Math.atan2(dy, dx);
 	}
 	
 	public static double getAngleForArc(Point startPoint, Point endPoint, Point centerPoint) {
@@ -91,6 +91,6 @@ public class Point {
 		double c = Point.getDistance(startPoint, endPoint);
 		
 		//solve for arc measure with law of cosines
-		return Math.acos((a*a + b*b - c*c) / (2 * a * b));
+		return Math.acos((c*c - a*a - b*b) / (-2 * a * b));
 	}
 }

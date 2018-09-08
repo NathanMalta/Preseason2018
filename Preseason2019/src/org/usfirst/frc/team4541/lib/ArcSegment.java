@@ -86,6 +86,7 @@ public class ArcSegment implements Segment {
 		//get the arc angle of the amount of distance left to drive
 		double remainingArcRadians = Point.getAngleForArc(lookaheadPos, this.endPoint, this.centerPoint);
 		
+//		System.out.println(lookaheadPos + ", " +  this.endPoint + ", " + this.centerPoint);
 		//get total arc distance with s = theta * r
 		return remainingArcRadians * this.radius;
 	}
