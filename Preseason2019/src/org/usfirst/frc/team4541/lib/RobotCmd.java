@@ -1,12 +1,12 @@
 package org.usfirst.frc.team4541.lib;
 
 public class RobotCmd {
-	double headingDesired;
-	double velDesired;
+	double lVelDesired;
+	double rVelDesired;
 	
-	public RobotCmd(double headingDesired, double velDesired) {
-		this.headingDesired = headingDesired;
-		this.velDesired = velDesired;
+	public RobotCmd(double lVelDesired, double rVelDesired) {
+		this.lVelDesired = lVelDesired;
+		this.rVelDesired = rVelDesired;
 	}
 	
 }

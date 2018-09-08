@@ -20,7 +20,7 @@ public class PathTest {
 		System.out.println("dist 2:" + testSegment.getDistanceToEndpoint(lookahead));
 		
 		VelocityManager manager = new VelocityManager(Constants.kMaxAccel, Constants.kMaxJerk);
-		double distNeeded = manager.getDistanceNeededToAccel(30, 0);
+		double distNeeded = manager.getDistanceNeededToAccel(Constants.kMaxAccel, 30, 0);
 		System.out.println(distNeeded);
 	}
 
