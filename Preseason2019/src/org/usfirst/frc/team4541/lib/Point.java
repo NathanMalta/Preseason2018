@@ -79,8 +79,8 @@ public class Point {
 	 * @param desiredPos the point we want to be at
 	 */
 	public static double getAngleNeeded(Point currentPos, Point desiredPos) {
-		double dx = currentPos.getX() - desiredPos.getX();
-		double dy = currentPos.getY() - desiredPos.getY();
+		double dx = desiredPos.getX() - currentPos.getX();
+		double dy = desiredPos.getY() - currentPos.getY();
 		return Math.atan2(dy, dx);
 	}
 	

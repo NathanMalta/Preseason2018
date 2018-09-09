@@ -13,4 +13,15 @@ public class MathHelper {
 	public static boolean areApproxEqual(double v1, double v2) {
 		return Math.round(v1 * 1000) == Math.round(v2 * 1000);
 	}
+	/*
+	 * Checks if two doubles are equal or within a given tolerance of one another
+	 * 
+	 * @param v1: the first value to be compared
+	 * @param v2: the second value to be compared
+	 * @param tol: the tolerance
+	 */
+	public static boolean areEqualWithinTol(double v1, double v2, double tol) {
+		double diff = Math.abs(v1 - v2);
+		return diff <= tol;
+	}
 }

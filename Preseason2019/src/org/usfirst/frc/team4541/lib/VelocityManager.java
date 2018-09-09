@@ -8,7 +8,7 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 	
 	double maxAccel;
 	double maxJerk;
-
+	
 	public VelocityManager(double maxAccel, double maxJerk) {
 		this.dt = -1;
 		this.lastUpdateTime = -1;
@@ -30,7 +30,7 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 			this.dt = Constants.kDefaultDt;
 		} else { 
 			// update dt based on time elapsed since last update
-			this.updateDt();
+//			this.updateDt(); //TODO: remove comment - just to allow speedup in simulation
 		}
 		double overallVel = this.getOverallVelocityTarget(segment, state);
 		double differential = this.getNextDifferential(this.getAccelForTurning(segment, state), state.getDifferential(), 
@@ -63,7 +63,9 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 	 * @param state: the current position + velocity of the robot
 	 */
 	public boolean shouldAccelToEndPoint(Segment segment, RobotPos state) {
-		return this.getDistanceRemaining(segment, state) <= this.getDistanceNeededToAccel(this.getAccelForSpeedUp(segment, state), state.getVelocity(), segment.getEndVelocity());
+		double remainingDist = this.getDistanceRemaining(segment, state);
+		double distanceToAccel = this.getDistanceNeededToAccel(this.getAccelForSpeedUp(segment, state), state.getVelocity(), segment.getEndVelocity());
+		return remainingDist <= distanceToAccel || MathHelper.areEqualWithinTol(remainingDist, distanceToAccel, 0.1);
 	}
 	
 	/*
@@ -164,7 +166,8 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 	 */
 	public double getVelocityDifferentialSetpoint(Segment segment, RobotPos state) {
 		Point lookahead = segment.getClosestPointOnSegment(state.getLookaheadPoint());
-		double angleError = Point.getAngleNeeded(state.position, lookahead) - state.heading;
+		double angleError = state.heading - Point.getAngleNeeded(state.position, lookahead);
+//		System.out.println(state.position + "," + lookahead + "," + Point.getAngleNeeded(state.position, lookahead));
 //		System.out.println(state.heading + "," + Point.getAngleNeeded(state.position, lookahead) + "," + state.getDifferential());
 		while (angleError > Math.PI) {
 			angleError -= Math.PI * 2;
@@ -173,17 +176,18 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 			angleError += Math.PI * 2;
 		}
 		
-//		double heading = state.heading;
-//		while (heading > Math.PI) {
-//			heading -= Math.PI * 2;
-//		}
-//		while (heading < -Math.PI) {
-//			heading += Math.PI * 2;
-//		}
+		double heading = state.heading;
+		while (heading > Math.PI) {
+			heading -= Math.PI * 2;
+		}
+		while (heading < -Math.PI) {
+			heading += Math.PI * 2;
+		}
 		//error, diff setpoint, heading, desired heading
+//		System.out.println(angleError + "," + heading + "," + Point.getAngleNeeded(state.position, lookahead));
 //		System.out.println(angleError);
 //		System.out.println(angleError + "," + segment.getMaxVelocity() * Math.max(-1, Math.min(1, angleError * Constants.kTurnVelCoefficient)) +"," + heading + "," + Point.getAngleNeeded(state.position, lookahead));
-		return segment.getMaxVelocity() * Math.max(-1, Math.min(1, angleError * Constants.kTurnVelCoefficient));
+		return Constants.kTurningVelocity * Math.max(-1, Math.min(1, angleError * Constants.kTurnVelCoefficient));
 	}
 	
 	/*

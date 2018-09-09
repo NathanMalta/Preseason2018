@@ -26,39 +26,34 @@ public class PathTest {
 //		System.out.println(distNeeded);
 		
 		Path path = new Path();
-		Segment seg1 = new LineSegment(new Point(0, 0), new Point(50, 0), 15, 7);
+		Segment seg1 = new LineSegment(new Point(0, 0), new Point(60, 0), 15, 7);
 		path.addSegment(seg1);
-		Segment seg2 = new ArcSegment(new Point(50, 0), new Point(80, 30), new Point(50, 30), 7);
+		Segment seg2 = new ArcSegment(new Point(60, 0), new Point(90, 30), new Point(60, 30), 7);
 		path.addSegment(seg2);
-		Segment seg3 = new LineSegment(new Point(80, 30), new Point(80, 80), 15, 0);
+		Segment seg3 = new LineSegment(new Point(90, 30), new Point(90, 80), 15, 0);
 		path.addSegment(seg3);
 		
-//		Segment seg3 = new LineSegment(new Point(30, 80), new Point(50, 80), 10, 0);
-//		path.addSegment(seg3);
 		RobotPos currentPos = new RobotPos(0,0, 0, 0,0);
-		while (true) {
+		while (!path.isFinished()) {
 			try {
-				Thread.sleep(20);
+				Thread.sleep(1);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 			RobotCmd cmd = path.update(currentPos);
 //			double heading = currentPos.heading + ((Constants.kWheelDiameter/2) / Constants.kWheelBase) * ftToRad(cmd.getRightVel() - cmd.getLeftVel()) * path.manager.dt;
-			double heading = currentPos.heading + currentPos.getDifferential() * path.manager.dt;
-//			double heading = 0;
-			double xPos = currentPos.position.getX() + (cmd.getLeftVel() + cmd.getRightVel())/2 * path.manager.dt * Math.cos(heading - Math.PI / 2);
-			double yPos = currentPos.position.getY() + (cmd.getLeftVel() + cmd.getRightVel())/2 * path.manager.dt * Math.sin(heading - Math.PI / 2);
+			double heading = currentPos.heading - currentPos.getDifferential() * path.manager.dt;
+			double xPos = currentPos.position.getX() + (cmd.getLeftVel() + cmd.getRightVel())/2 * path.manager.dt * Math.cos(heading);
+			double yPos = currentPos.position.getY() + (cmd.getLeftVel() + cmd.getRightVel())/2 * path.manager.dt * Math.sin(heading);
 			currentPos = new RobotPos(xPos, yPos, heading, cmd.lVelDesired, cmd.rVelDesired);
-//			System.out.println(currentPos.getVelocity() + "," + currentPos.lVel + "," + currentPos.rVel);
-//			System.out.println(currentPos.heading + "," + currentPos.getDifferential());
 			System.out.println(currentPos);
 			
 		}
 	}
 	
-	public static double ftToRad(double inches) {
-		double circum = Constants.kWheelDiameter * Math.PI;
-		return (inches / circum) * Math.PI * 2;
-	}
+//	public static double ftToRad(double inches) {
+//		double circum = Constants.kWheelDiameter * Math.PI;
+//		return (inches / circum) * Math.PI * 2;
+//	}
 
 }

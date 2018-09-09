@@ -36,7 +36,9 @@ public class Path {
 			if (this.canMoveOnToNextSegment()) {
 				this.moveOnToNextSegment();
 			} else {
-				this.didFinish = true;
+				if (robotPos.getVelocity() < 0.001) {
+					this.didFinish = true;
+				}
 			}
 		}
 		
