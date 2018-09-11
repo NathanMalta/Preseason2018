@@ -102,8 +102,14 @@ public class RobotState {
 	  return heading; //in radians
 	}
 
-	public void start() {
-		this.updatePos(newRTravel, newLTravel, newHeading);
+	public void start(double r, double l , double h) {
+		Thread t = new Thread(() -> {
+            while (true) {
+            	this.updatePos(r, l, h);
+            }
+        });
+        t.start();
+		
 	}
 
 	
