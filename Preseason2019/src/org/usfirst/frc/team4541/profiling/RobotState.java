@@ -1,5 +1,7 @@
 package org.usfirst.frc.team4541.profiling;
 
+import java.util.concurrent.locks.ReentrantLock;
+
 import org.usfirst.frc.team4541.robot.Robot;
 
 public class RobotState {
@@ -11,6 +13,8 @@ public class RobotState {
 	double lWheelTravel = 0;
 	double rotationsPerInch = 0;
 	boolean isLocked = false;
+
+	ReentrantLock mutex = new ReentrantLock();
 
 	public RobotState(double x, double y, double h, double rWT, double lWT) {
 		xPos = x; // in inches
@@ -116,18 +120,35 @@ public class RobotState {
 	}
 
 	public double getX() {
-		return xPos;
+		mutex.lock();
+		try {
+			return xPos;
+		} finally {
+			mutex.unlock();
+		}
 	}
 
 	public double getY() {
-		return yPos;
+		mutex.lock();
+		try {
+			return yPos;
+		} finally {
+			mutex.unlock();
+		}
 	}
 
 	public void start() {
+
 		Thread t = new Thread(() -> {
 			while (true) {
 
-				this.updatePos(getRightWheel(), getLeftWheel(), getHeading());
+				mutex.lock();
+				// when locked, continously update position
+				try {
+					this.updatePos(getRightWheel(), getLeftWheel(), getHeading());
+				} finally {
+					mutex.unlock();
+				}
 
 			}
 		});
