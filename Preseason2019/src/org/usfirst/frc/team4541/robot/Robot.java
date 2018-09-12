@@ -23,6 +23,8 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import org.usfirst.frc.team4541.profiling.RobotState;
+
 import java.nio.file.Path;
 
 import org.usfirst.frc.team4541.robot.Constants;
@@ -44,6 +46,8 @@ public class Robot extends TimedRobot {
 	public static OI oi;
 	// Robot wide sensors
 	public static AHRS gyro;
+	
+	RobotState thisState = new RobotState(0, 0, 0, 0, 0);
 
 	// subsystems
 
@@ -111,6 +115,7 @@ public class Robot extends TimedRobot {
 	@Override
 	public void teleopInit() {
 		this.setPeriod(0.002); // lower loop rate to default because profiling is no longer needed.
+	    thisState.start();
 
 	}
 

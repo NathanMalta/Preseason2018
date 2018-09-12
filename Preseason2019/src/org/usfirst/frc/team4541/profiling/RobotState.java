@@ -1,5 +1,7 @@
 package org.usfirst.frc.team4541.profiling;
 
+import org.usfirst.frc.team4541.robot.Robot;
+
 public class RobotState {
 
 	double xPos = 0;
@@ -8,6 +10,7 @@ public class RobotState {
 	double rWheelTravel = 0;
 	double lWheelTravel = 0;
 	double rotationsPerInch = 0;
+	boolean isLocked = false;
 
 	public RobotState(double x, double y, double h, double rWT, double lWT) {
 		xPos = x; // in inches
@@ -44,75 +47,91 @@ public class RobotState {
 	}
 
 	/*
-	 * Effectively undoes the rotation by an angle; 
-	 * If a line segment is rotated by the angle and then its inverse, 
-	 * it will have the same heading as before being rotated
-	*/
+	 * Effectively undoes the rotation by an angle; If a line segment is rotated by
+	 * the angle and then its inverse, it will have the same heading as before being
+	 * rotated
+	 */
 	public double getInverseOfAngle(double angleRad) {
 		return Math.atan2((-1 * Math.sin(angleRad)), Math.cos(angleRad));
 	}
 
 	/*
-	 * Rotates an a1 by a2 using a rotation matrix 
+	 * Rotates an a1 by a2 using a rotation matrix
 	 */
 	public double rotate(double a1, double a2) {
 		return Math.atan2(Math.cos(a1) * Math.sin(a2) + Math.sin(a1) * Math.cos(a2),
 				Math.cos(a1) * Math.cos(a2) - Math.sin(a1) * Math.sin(a2));
 	}
-	
+
 	/*
-	 * Converts the number of wheel rotations into the distance traveled by the robot in inches
+	 * Converts the number of wheel rotations into the distance traveled by the
+	 * robot in inches
 	 */
 	public double rotationToInches(double rot) {
-	  return rot / rotationsPerInch;
+		return rot / rotationsPerInch;
 	}
-	
+
 	/*
 	 * Get the absolute x position of the robot from dead reckoning
 	 */
 	public double getXPos() {
-	  return rotationToInches(xPos); //in inches
+		return rotationToInches(xPos); // in inches
 	}
-	
+
 	/*
 	 * Get the absolute y position of the robot from dead reckoning
 	 */
 	public double getYPos() {
-	  return rotationToInches(yPos); //in inches
+		return rotationToInches(yPos); // in inches
 	}
-	
+
 	/*
 	 * Get the net distance traveled by the right wheels of the robot
 	 */
 	public double getRightWheelTravel() {
-	  return rWheelTravel; //in inches
+		return rWheelTravel; // in inches
 	}
 
 	/*
 	 * Get the net distance traveled by the left wheels of the robot
 	 */
 	public double getLeftWheelTravel() {
-	  return lWheelTravel; //in inches
+		return lWheelTravel; // in inches
 	}
 
 	/*
-	 * Get the heading of the robot (from the gyroscope at the time of the last update)
+	 * Get the heading of the robot (from the gyroscope at the time of the last
+	 * update)
 	 */
 	public double getHeading() {
-	  return heading; //in radians
+		return heading; // in radians
 	}
 
-	public void start(double r, double l , double h) {
+	public double getRightWheel() {
+		return Robot.drivetrain.getRightVel();
+	}
+
+	public double getLeftWheel() {
+		return Robot.drivetrain.getLeftVel();
+	}
+
+	public double getX() {
+		return xPos;
+	}
+
+	public double getY() {
+		return yPos;
+	}
+
+	public void start() {
 		Thread t = new Thread(() -> {
-            while (true) {
-            	this.updatePos(r, l, h);
-            }
-        });
-        t.start();
-		
-	}
+			while (true) {
 
-	
-	
+				this.updatePos(getRightWheel(), getLeftWheel(), getHeading());
+
+			}
+		});
+		t.start();
+	}
 
 }
