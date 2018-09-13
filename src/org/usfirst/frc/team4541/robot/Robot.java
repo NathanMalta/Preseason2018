@@ -47,12 +47,12 @@ public class Robot extends TimedRobot {
 	// Robot wide sensors
 	public static AHRS gyro;
 	
-	RobotState thisState = new RobotState(0, 0, 0, 0, 0);
-
 	// subsystems
 
 	public static DriveTrain drivetrain;
 
+	RobotState state;
+	
 	/**
 	 * This function is run when the robot is first started up and should be used
 	 * for any initialization code.
@@ -63,6 +63,7 @@ public class Robot extends TimedRobot {
 
 		drivetrain = new DriveTrain();
 		oi = new OI();
+		state = new RobotState(0, 0, 0, drivetrain.getRightPos(), drivetrain.getLeftPos());
 
 	}
 
@@ -114,8 +115,8 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void teleopInit() {
-		this.setPeriod(0.002); // lower loop rate to default because profiling is no longer needed.
-	    thisState.start();
+		this.setPeriod(0.02); // lower loop rate to default because profiling is no longer needed.
+		state.start();
 
 	}
 
@@ -124,7 +125,8 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
-
+		System.out.println(state.getX() + " , " + state.getY());
+		Scheduler.getInstance().run();
 		log();
 	}
 

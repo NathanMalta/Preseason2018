@@ -11,10 +11,11 @@ public class RobotState {
 	double heading = 0;
 	double rWheelTravel = 0;
 	double lWheelTravel = 0;
-	double rotationsPerInch = 0;
 	boolean isLocked = false;
 
 	ReentrantLock mutex = new ReentrantLock();
+	
+	Thread thread;
 
 	public RobotState(double x, double y, double h, double rWT, double lWT) {
 		xPos = x; // in inches
@@ -22,9 +23,6 @@ public class RobotState {
 		heading = h; // in radians
 		rWheelTravel = rWT; // in rotations
 		lWheelTravel = lWT; // in rotations
-		// rotationsPerInch = 0.1475;
-		rotationsPerInch = 0.08; // in rotations/inch
-
 	}
 
 	public void updatePos(double newRTravel, double newLTravel, double newHeading) {
@@ -47,7 +45,6 @@ public class RobotState {
 		heading = newHeading;
 		rWheelTravel = newRTravel;
 		lWheelTravel = newLTravel;
-
 	}
 
 	/*
@@ -65,28 +62,6 @@ public class RobotState {
 	public double rotate(double a1, double a2) {
 		return Math.atan2(Math.cos(a1) * Math.sin(a2) + Math.sin(a1) * Math.cos(a2),
 				Math.cos(a1) * Math.cos(a2) - Math.sin(a1) * Math.sin(a2));
-	}
-
-	/*
-	 * Converts the number of wheel rotations into the distance traveled by the
-	 * robot in inches
-	 */
-	public double rotationToInches(double rot) {
-		return rot / rotationsPerInch;
-	}
-
-	/*
-	 * Get the absolute x position of the robot from dead reckoning
-	 */
-	public double getXPos() {
-		return rotationToInches(xPos); // in inches
-	}
-
-	/*
-	 * Get the absolute y position of the robot from dead reckoning
-	 */
-	public double getYPos() {
-		return rotationToInches(yPos); // in inches
 	}
 
 	/*
@@ -108,15 +83,15 @@ public class RobotState {
 	 * update)
 	 */
 	public double getHeading() {
-		return heading; // in radians
+		return Math.toRadians(Robot.gyro.getAngle()); // in radians
 	}
 
 	public double getRightWheel() {
-		return Robot.drivetrain.getRightVel();
+		return Robot.drivetrain.getRightPos();
 	}
 
 	public double getLeftWheel() {
-		return Robot.drivetrain.getLeftVel();
+		return Robot.drivetrain.getLeftPos();
 	}
 
 	public double getX() {
@@ -139,7 +114,7 @@ public class RobotState {
 
 	public void start() {
 
-		Thread t = new Thread(() -> {
+		thread = new Thread(() -> {
 			while (true) {
 
 				mutex.lock();
@@ -152,7 +127,11 @@ public class RobotState {
 
 			}
 		});
-		t.start();
+		thread.start();
+	}
+	
+	public void end() {
+		//TODO: 
 	}
 
 }

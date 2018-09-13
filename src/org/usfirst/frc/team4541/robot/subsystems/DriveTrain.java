@@ -168,17 +168,17 @@ public class DriveTrain extends Subsystem {
 	}
 	
 	public double getLeftPos() {
-		return this.leftMotor1.getSelectedSensorPosition(0) / Constants.kSensorUnitsPerRotation;
+		return this.leftMotor1.getSelectedSensorPosition(0) / Constants.kSensorUnitsPerFt;
 	}
 	public double getLeftVel() {
-		return this.leftMotor1.getSelectedSensorVelocity(0) / Constants.kSensorUnitsPerRotation;
+		return this.leftMotor1.getSelectedSensorVelocity(0) / Constants.kSensorUnitsPerFt;
 	}
 	
 	public double getRightPos() {
-		return this.rightMotor1.getSelectedSensorPosition(0) / Constants.kSensorUnitsPerRotation;
+		return this.rightMotor1.getSelectedSensorPosition(0) / Constants.kSensorUnitsPerFt;
 	}
 	public double getRightVel() {
-		return this.rightMotor1.getSelectedSensorVelocity(0) / Constants.kSensorUnitsPerRotation;
+		return this.rightMotor1.getSelectedSensorVelocity(0) / Constants.kSensorUnitsPerFt;
 	}
 	
 	public void log() {

@@ -10,7 +10,7 @@ public class Path {
 	
 	public Path() {
 		didFinish = false;
-		manager = new VelocityManager(Constants.kMaxAccel, Constants.kMaxJerk);
+		manager = new VelocityManager();
 	}
 	
 	/*
@@ -36,7 +36,7 @@ public class Path {
 			if (this.canMoveOnToNextSegment()) {
 				this.moveOnToNextSegment();
 			} else {
-				if (robotPos.getVelocity() < 0.001) {
+				if (robotPos.getVelocity() < 0.1) {
 					this.didFinish = true;
 				}
 			}

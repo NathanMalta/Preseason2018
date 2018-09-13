@@ -12,7 +12,7 @@ import java.util.Hashtable;
 
 import org.usfirst.frc.team4541.robot.Constants;
 
-import org.usfirst.frc.team4541.robot.commands.ShiftGear;
+//import org.usfirst.frc.team4541.robot.commands.ShiftGear;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PIDSource;
@@ -57,8 +57,8 @@ public class OI {
 	public int lastDpad = -1;
 
 	public OI() {
-		r_bump.whenPressed(new ShiftGear(false)); // right is high
-		l_bump.whenPressed(new ShiftGear(true)); // left is low
+//		r_bump.whenPressed(new ShiftGear(false)); // right is high
+//		l_bump.whenPressed(new ShiftGear(true)); // left is low
 	}
 
 	public Joystick getJoystick() {
@@ -80,10 +80,10 @@ public class OI {
 			@Override
 			public double pidGet() {
 				switch (sensor) {
-				case ENCODER_RIGHT_WHEELS:
-					return Robot.drivetrain.getRightTalon().getSelectedSensorPosition(0);
-				case ENCODER_LEFT_WHEELS:
-					return Robot.drivetrain.getLeftTalon().getSelectedSensorPosition(0);
+//				case ENCODER_RIGHT_WHEELS:
+//					return Robot.drivetrain.getRightTalon().getSelectedSensorPosition(0);
+//				case ENCODER_LEFT_WHEELS:
+//					return Robot.drivetrain.getLeftTalon().getSelectedSensorPosition(0);
 				}
 				return 0;
 			}

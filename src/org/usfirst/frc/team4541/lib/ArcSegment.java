@@ -14,6 +14,8 @@ public class ArcSegment implements Segment {
 	double maxVel;
 	double endVel;
 	
+	boolean isAccelToEndpoint = false;
+	
 	public ArcSegment(Point startPoint, Point endPoint, Point centerPoint, double maxVel, double endVel) {
 		this.startPoint = startPoint;
 		this.endPoint = endPoint;
@@ -26,6 +28,8 @@ public class ArcSegment implements Segment {
 		
 		this.maxVel = maxVel;
 		this.endVel = endVel;
+		
+		isAccelToEndpoint = false;
 	}
 	
 	public ArcSegment(Point startPoint, Point endPoint, Point centerPoint, double maxVel) {
@@ -99,6 +103,16 @@ public class ArcSegment implements Segment {
 	@Override
 	public double getEndVelocity() {
 		return this.endVel;
+	}
+
+	@Override
+	public void setIsAcceleratingToEndpoint(boolean isAccel) {
+		this.isAccelToEndpoint = isAccel;
+	}
+
+	@Override
+	public boolean isAcceleratingToEndpoint() {
+		return this.isAccelToEndpoint;
 	}
 
 }

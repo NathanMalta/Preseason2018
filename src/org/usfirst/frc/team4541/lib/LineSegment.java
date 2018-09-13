@@ -8,6 +8,8 @@ public class LineSegment implements Segment {
 	double maxVel;
 	double endVel;
 	
+	boolean isAccelToEndpoint = false;
+	
 	public LineSegment(Point startPoint, Point endPoint, double maxVel, double endVel) {
 		this.startPoint = startPoint;
 		this.endPoint = endPoint;
@@ -83,6 +85,16 @@ public class LineSegment implements Segment {
 	@Override
 	public double getEndVelocity() {
  		return this.endVel;
+	}
+	
+	@Override
+	public void setIsAcceleratingToEndpoint(boolean isAccel) {
+		this.isAccelToEndpoint = isAccel;
+	}
+
+	@Override
+	public boolean isAcceleratingToEndpoint() {
+		return this.isAccelToEndpoint;
 	}
 
 }

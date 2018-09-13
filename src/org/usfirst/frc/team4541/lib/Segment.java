@@ -14,4 +14,8 @@ public interface Segment {
 	
 	public double getEndVelocity();
 	
+	public void setIsAcceleratingToEndpoint(boolean isAccel);
+	
+	public boolean isAcceleratingToEndpoint();
+	
 }

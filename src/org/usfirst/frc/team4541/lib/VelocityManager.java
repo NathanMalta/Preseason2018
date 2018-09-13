@@ -6,15 +6,9 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 	double dt;
 	double lastUpdateTime;
 	
-	double maxAccel;
-	double maxJerk;
-	
-	public VelocityManager(double maxAccel, double maxJerk) {
+	public VelocityManager() {
 		this.dt = -1;
 		this.lastUpdateTime = -1;
-		
-		this.maxAccel = maxAccel;
-		this.maxJerk = maxJerk;
 	}
 	
 	/*
@@ -33,8 +27,9 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 //			this.updateDt(); //TODO: remove comment - just to allow speedup in simulation
 		}
 		double overallVel = this.getOverallVelocityTarget(segment, state);
-		double differential = this.getNextDifferential(this.getAccelForTurning(segment, state), state.getDifferential(), 
+		double differential = this.getNextDifferential(Constants.kMaxAccelTurning, state.getDifferential(), 
 				this.getVelocityDifferentialSetpoint(segment, state)) / 2;
+//		double differential = this.getVelocityDifferentialSetpoint(segment, state) / 2;
 		return new RobotCmd(overallVel - differential, overallVel + differential); //TODO: make sure robot turns in the right direction
 	}
 	
@@ -46,13 +41,17 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 	 * @param state: the current position + velocity of the robot
 	 */
 	public double getOverallVelocityTarget(Segment segment, RobotPos state) {
-		double maxSpeedAccel = this.getAccelForSpeedUp(segment, state);
+		if (segment.isAcceleratingToEndpoint()) {
+			double requiredAccelToFinish = this.getAccelNeededToGetToVelByPoint(state.getVelocity(), segment.getEndVelocity(), segment.getDistanceToEndpoint(state.getVelocityLookaheadPoint(dt)));
+			return this.getNextVelocity(requiredAccelToFinish, state.getVelocity(), segment.getEndVelocity());
+		}
 		if (this.shouldAccelToEndPoint(segment, state)) {
 			//The robot must accelerate/decelerate to reach the velocity desired by the segment's endpoint
-			return this.getNextVelocity(maxSpeedAccel, state.getVelocity(), segment.getEndVelocity());
+			segment.setIsAcceleratingToEndpoint(true);
+			return this.getNextVelocity(Constants.kMaxAccelSpeedUp, state.getVelocity(), segment.getEndVelocity());
 		} else {
 			//The robot must accelerate/decelerate to reach the max speed of the path
-			return this.getNextVelocity(maxSpeedAccel, state.getVelocity(), segment.getMaxVelocity());
+			return this.getNextVelocity(Constants.kMaxAccelSpeedUp, state.getVelocity(), segment.getMaxVelocity());
 		}
 	}
 	
@@ -63,9 +62,11 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 	 * @param state: the current position + velocity of the robot
 	 */
 	public boolean shouldAccelToEndPoint(Segment segment, RobotPos state) {
-		double remainingDist = this.getDistanceRemaining(segment, state);
-		double distanceToAccel = this.getDistanceNeededToAccel(this.getAccelForSpeedUp(segment, state), state.getVelocity(), segment.getEndVelocity());
-		return remainingDist <= distanceToAccel || MathHelper.areEqualWithinTol(remainingDist, distanceToAccel, 0.1);
+//		double remainingDist = this.getDistanceRemaining(segment, state);
+//		double distanceToAccel = this.getDistanceNeededToAccel(this.getAccelForSpeedUp(segment, state), state.getVelocity(), segment.getEndVelocity());
+//		return remainingDist <= distanceToAccel;
+		double requiredAccelToFinish = this.getAccelNeededToGetToVelByPoint(state.getVelocity(), segment.getEndVelocity(), segment.getDistanceToEndpoint(state.getVelocityLookaheadPoint(dt)));
+		return requiredAccelToFinish >= Constants.kMaxAccelSpeedUp;
 	}
 	
 	/*
@@ -78,6 +79,22 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 	public double getTimeNeededToAccel(double maxSpeedAccel, double v1, double v2) {
 		double delta = Math.abs(v1 - v2);
 		return delta / maxSpeedAccel;
+	}
+	
+	/*
+	 * returns the acceleration required to achieve a certain velocity from the current velocity by a given
+	 * distance
+	 * 
+	 * @param v2: current velocity
+	 * @param v2: desired velocity
+	 * @param dist: distance desired
+	 */
+	public double getAccelNeededToGetToVelByPoint(double v1, double v2, double dist) {
+		double deltaV = Math.abs(v2 - v1);
+		
+		double secondsRequired = (2 * dist) / deltaV;
+		
+		return deltaV / secondsRequired;
 	}
 	
 	/*
@@ -137,28 +154,6 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 	}
 	
 	/*
-	 * Get the max acceleration allocated to correcting the robot's heading
-	 * 
-	 * @param segment: the current segment the robot is following
-	 * @param state: the current position + velocity of the robot
-	 */
-	public double getAccelForTurning(Segment segment, RobotPos state) {
-		double diffError = this.getVelocityDifferentialSetpoint(segment, state) - state.getDifferential();
-		return this.maxAccel * Math.min(1, Math.abs(diffError * Constants.kTurnAccelCoefficient));
-	}
-	
-	/*
-	 * Get the max acceleration allocated to changing the robot's velocity
-	 * 
-	 * @param segment: the current segment the robot is following
-	 * @param state: the current position + velocity of the robot
-	 */
-	public double getAccelForSpeedUp(Segment segment, RobotPos state) {
-		double diffError = this.getVelocityDifferentialSetpoint(segment, state) - state.getDifferential();
-		return this.maxAccel * (1 - Math.min(1, Math.abs(diffError * Constants.kTurnAccelCoefficient)));
-	}
-	
-	/*
 	 * Get the desired differential in velocity for the robot's wheels
 	 * 
 	 * @param segment: the current segment the robot is following
@@ -166,28 +161,44 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 	 */
 	public double getVelocityDifferentialSetpoint(Segment segment, RobotPos state) {
 		Point lookahead = segment.getClosestPointOnSegment(state.getLookaheadPoint());
-		double angleError = state.heading - Point.getAngleNeeded(state.position, lookahead);
+		double angleError;
+		if (Point.getAngleNeeded(state.position, lookahead) > 0.01) {
+			ConnectionArc arc = new ConnectionArc(state, lookahead, this.dt);
+			angleError = Point.getAngleNeeded(state.position, arc.getLookaheadPoint()) - state.heading;
+		} else {
+			angleError = Point.getAngleNeeded(state.position, lookahead) - state.heading;
+		}
 //		System.out.println(state.position + "," + lookahead + "," + Point.getAngleNeeded(state.position, lookahead));
 //		System.out.println(state.heading + "," + Point.getAngleNeeded(state.position, lookahead) + "," + state.getDifferential());
-		while (angleError > Math.PI) {
-			angleError -= Math.PI * 2;
-		}
-		while (angleError < -Math.PI) {
-			angleError += Math.PI * 2;
-		}
+
+//		while (angleError > Math.PI) {
+//			angleError -= Math.PI * 2;
+//		}
+//		while (angleError < -Math.PI) {
+//			angleError += Math.PI * 2;
+//		}
+//		
+//		double heading = state.heading;
+//		while (heading > Math.PI) {
+//			heading -= Math.PI * 2;
+//		}
+//		while (heading < -Math.PI) {
+//			heading += Math.PI * 2;
+//		}
 		
-		double heading = state.heading;
-		while (heading > Math.PI) {
-			heading -= Math.PI * 2;
-		}
-		while (heading < -Math.PI) {
-			heading += Math.PI * 2;
-		}
 		//error, diff setpoint, heading, desired heading
 //		System.out.println(angleError + "," + heading + "," + Point.getAngleNeeded(state.position, lookahead));
 //		System.out.println(angleError);
 //		System.out.println(angleError + "," + segment.getMaxVelocity() * Math.max(-1, Math.min(1, angleError * Constants.kTurnVelCoefficient)) +"," + heading + "," + Point.getAngleNeeded(state.position, lookahead));
-		return Constants.kTurningVelocity * Math.max(-1, Math.min(1, angleError * Constants.kTurnVelCoefficient));
+
+//		return Constants.kTurningVelocity * Math.max(-1, Math.min(1, angleError * Constants.kTurnVelCoefficient));
+		
+//		System.out.println((angleError * Constants.kWheelBase) / this.dt);
+		
+		System.out.println(state.heading + "," + (Point.getAngleNeeded(state.position, lookahead) + "," + (angleError * Constants.kWheelBase) / this.dt * Constants.kTurnVelCoefficient));
+		
+		return (angleError * Constants.kWheelBase) / (this.dt) * Constants.kTurnVelCoefficient;
+		
 	}
 	
 	/*

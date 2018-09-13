@@ -93,4 +93,12 @@ public class Point {
 		//solve for arc measure with law of cosines
 		return Math.acos((c*c - a*a - b*b) / (-2 * a * b));
 	}
+	
+	/*
+	 * returns the side length opposite to theta
+	 */
+	public static double getOppSideLength(double a, double b, double thetaC) {
+		//solve for side length with law of cosines
+		return Math.sqrt(a*a + b*b - 2 * a * b * Math.cos(thetaC));
+	}
 }
