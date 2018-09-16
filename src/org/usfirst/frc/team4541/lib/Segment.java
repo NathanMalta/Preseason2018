@@ -10,6 +10,8 @@ public interface Segment {
 	
 	public double getDistanceToEndpoint(Point lookaheadPos);
 	
+	public Point getLookaheadPoint(Point robotPosition, double lookahead);
+	
 	public double getMaxVelocity();
 	
 	public double getEndVelocity();

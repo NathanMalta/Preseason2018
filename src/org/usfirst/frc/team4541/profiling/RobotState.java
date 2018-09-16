@@ -2,6 +2,8 @@ package org.usfirst.frc.team4541.profiling;
 
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.usfirst.frc.team4541.lib.MathHelper;
+import org.usfirst.frc.team4541.lib.Point;
 import org.usfirst.frc.team4541.robot.Robot;
 
 public class RobotState {
@@ -16,6 +18,8 @@ public class RobotState {
 	ReentrantLock mutex = new ReentrantLock();
 	
 	Thread thread;
+	
+	private volatile boolean running = false;
 
 	public RobotState(double x, double y, double h, double rWT, double lWT) {
 		xPos = x; // in inches
@@ -83,7 +87,7 @@ public class RobotState {
 	 * update)
 	 */
 	public double getHeading() {
-		return Math.toRadians(Robot.gyro.getAngle()); // in radians
+		return MathHelper.angleToNegPiToPi(Math.toRadians(Robot.gyro.getAngle())); // in radians
 	}
 
 	public double getRightWheel() {
@@ -111,11 +115,20 @@ public class RobotState {
 			mutex.unlock();
 		}
 	}
+	
+	public Point getPosition() {
+		mutex.lock();
+		try {
+			return new Point(this.xPos, this.yPos);
+		} finally {
+			mutex.unlock();
+		}
+	}
 
 	public void start() {
-
+		this.running = true;
 		thread = new Thread(() -> {
-			while (true) {
+			while (this.running) {
 
 				mutex.lock();
 				// when locked, continously update position
@@ -131,7 +144,7 @@ public class RobotState {
 	}
 	
 	public void end() {
-		//TODO: 
+		this.running = false;
 	}
 
 }

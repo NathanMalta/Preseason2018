@@ -115,4 +115,35 @@ public class ArcSegment implements Segment {
 		return this.isAccelToEndpoint;
 	}
 
+	@Override
+	public Point getLookaheadPoint(Point robotPosition, double lookahead) {
+		
+		if (this.getDistanceToEndpoint(this.getClosestPointOnSegment(robotPosition)) < lookahead) {
+			return this.getEndPoint();
+		}
+		
+		//calculated needed arc angle with s = theta * r
+		double angleNeeded = lookahead / this.radius;
+		//calculate the linear distance between the target and lookahead
+		double oppLen = Point.getOppSideLength(this.radius, this.radius, angleNeeded);
+		//create a translation that will move between current point and target point
+		
+		double theta = (Math.PI - angleNeeded) / 2;
+		
+		Point translationRequired = new Point(Math.cos(theta) * oppLen, Math.cos(theta) * oppLen);
+		
+		//apply the translation forwards and backwards
+		Point currentPos = this.getClosestPointOnSegment(robotPosition);
+		Point p1 = Point.addPoints(currentPos, translationRequired);
+		Point p2 = Point.subtractPoints(currentPos, translationRequired);
+		
+		
+		//figure out which point gets us closer to the endpoint and then return that point
+		if (Point.getDistance(p1, this.endPoint) < Point.getDistance(p2, endPoint)) {
+			return p1;
+		} else {
+			return p2;
+		}
+	}
+
 }

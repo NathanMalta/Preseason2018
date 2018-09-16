@@ -23,14 +23,19 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import org.usfirst.frc.team4541.lib.LineSegment;
+import org.usfirst.frc.team4541.lib.Path;
+import org.usfirst.frc.team4541.lib.Point;
+import org.usfirst.frc.team4541.lib.RobotCmd;
+import org.usfirst.frc.team4541.lib.RobotPos;
+import org.usfirst.frc.team4541.lib.Segment;
 import org.usfirst.frc.team4541.profiling.RobotState;
 
-import java.nio.file.Path;
 
 import org.usfirst.frc.team4541.robot.Constants;
 
 import org.usfirst.frc.team4541.robot.OI.TRIG_MODE;
-
+import org.usfirst.frc.team4541.robot.commands.FollowPath;
 import org.usfirst.frc.team4541.robot.subsystems.DriveTrain;
 
 import com.kauailabs.navx.frc.AHRS;
@@ -51,7 +56,7 @@ public class Robot extends TimedRobot {
 
 	public static DriveTrain drivetrain;
 
-	RobotState state;
+	public static RobotState state;
 	
 	/**
 	 * This function is run when the robot is first started up and should be used
@@ -75,6 +80,7 @@ public class Robot extends TimedRobot {
 	@Override
 	public void disabledInit() {
 		Scheduler.getInstance().removeAll();
+		drivetrain.configTalons();
 
 	}
 
@@ -83,25 +89,15 @@ public class Robot extends TimedRobot {
 		Scheduler.getInstance().run();
 	}
 
-	/**
-	 * This autonomous (along with the chooser code above) shows how to select
-	 * between different autonomous modes using the dashboard. The sendable chooser
-	 * code works with the Java SmartDashboard. If you prefer the LabVIEW Dashboard,
-	 * remove all of the chooser code and uncomment the getString code to get the
-	 * auto name from the text box below the Gyro
-	 *
-	 * <p>
-	 * You can add additional auto modes by adding additional commands to the
-	 * chooser code above (like the commented example) or additional comparisons to
-	 * the switch structure below with additional strings & commands.
-	 */
-	Command currentAutoCommand;
 
 	// double currentTime = 0;
 	// int counter = 0;
 	@Override
 	public void autonomousInit() {
-		drivetrain.configTalons();
+		this.setPeriod(Constants.kDefaultDt);
+		state.start();
+		gyro.zeroYaw();
+		new FollowPath(FollowPath.PATH_TYPE.TEST_PATH).start();
 
 	}
 
@@ -115,9 +111,8 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void teleopInit() {
-		this.setPeriod(0.02); // lower loop rate to default because profiling is no longer needed.
-		state.start();
-
+		state.end();
+		gyro.setAngleAdjustment(0);
 	}
 
 	/**
@@ -125,7 +120,8 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
-		System.out.println(state.getX() + " , " + state.getY());
+		System.out.println(state.getX() + " , " + state.getY() + " , " + state.getHeading());
+//		System.out.println(drivetrain.getLeftPos() + ", " + drivetrain.getRightPos());
 		Scheduler.getInstance().run();
 		log();
 	}

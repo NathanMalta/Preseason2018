@@ -62,6 +62,16 @@ public class Point {
 	}
 	
 	/*
+	 * Subtract point b from point a, then return the difference
+	 * 
+	 * @param a the first point
+	 * @param b the second point
+	 */
+	public static Point subtractPoints(Point a, Point b) {
+		return new Point(a.getX() - b.getX(), a.getY() - b.getY());
+	}
+	
+	/*
 	 * return the distance between two points
 	 * 
 	 * @param a the first point
@@ -79,7 +89,7 @@ public class Point {
 	 * @param desiredPos the point we want to be at
 	 */
 	public static double getAngleNeeded(Point currentPos, Point desiredPos) {
-		double dx = desiredPos.getX() - currentPos.getX();
+		double dx = desiredPos.getX() - currentPos.getX() ;
 		double dy = desiredPos.getY() - currentPos.getY();
 		return Math.atan2(dy, dx);
 	}

@@ -96,5 +96,33 @@ public class LineSegment implements Segment {
 	public boolean isAcceleratingToEndpoint() {
 		return this.isAccelToEndpoint;
 	}
+	
+	/*
+	 * returns the slope of the line
+	 */
+	public double getSlope() {
+		Point delta = Point.getDelta(this.startPoint, this.endPoint);
+		return delta.getY() / delta.getX();
+	}
+	
+	@Override
+	public Point getLookaheadPoint(Point robotPosition, double lookahead) {
+		Point closestOnSegment = this.getClosestPointOnSegment(robotPosition);
+		double distRemaining = this.getDistanceToEndpoint(closestOnSegment);
+		if (distRemaining < lookahead) {
+			return this.endPoint;
+		}
+		double segmentAngle = Point.getAngleNeeded(this.startPoint, this.endPoint);
+		Point translationNeeded = new Point(Math.cos(segmentAngle) * lookahead, Math.sin(segmentAngle) * lookahead);
+		
+		Point p1 = Point.addPoints(closestOnSegment, translationNeeded);
+		Point p2 = Point.subtractPoints(closestOnSegment, translationNeeded);
+		
+		if (Point.getDistance(p1, this.endPoint) < Point.getDistance(p2, endPoint)) {
+			return p1;
+		} else {
+			return p2;
+		}
+	}
 
 }

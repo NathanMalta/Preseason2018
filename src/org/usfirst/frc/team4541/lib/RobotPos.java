@@ -28,20 +28,20 @@ public class RobotPos {
 	}
 	
 	public double getDifferential() {
-		return this.getLeftVel() - this.getRightVel();
+		return this.getRightVel() - this.getLeftVel();
 	}
 	
 	public double getVelocity() {
 		return (this.rVel + this.lVel) / 2.0;
 	}
 	
-	public Point getLookaheadPoint() { // Incorporate velocity later?
-		// get a point which is kLookaheadDistance inches in front of the robot
-		Point lookahead = new Point(Math.cos(heading) * Constants.kLookaheadDistance, Math.sin(heading) * Constants.kLookaheadDistance);
-		// add that point to the robot's current position
-		return Point.addPoints(this.position, lookahead);
-	}
-	
+//	public Point getLookaheadPoint() { // Incorporate velocity later?
+//		// get a point which is kLookaheadDistance inches in front of the robot
+//		Point lookahead = new Point(Math.cos(heading) * Constants.kLookaheadDistance, Math.sin(heading) * Constants.kLookaheadDistance);
+//		// add that point to the robot's current position
+//		return Point.addPoints(this.position, lookahead);
+//	}
+//	
 	public Point getVelocityLookaheadPoint(double dt) {
 		// get where the robot will be next update
 		double dist = dt * this.getVelocity();

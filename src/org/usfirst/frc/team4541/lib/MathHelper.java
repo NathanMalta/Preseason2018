@@ -24,4 +24,21 @@ public class MathHelper {
 		double diff = Math.abs(v1 - v2);
 		return diff <= tol;
 	}
+	/*
+	 * Takes an angle in radians and returns that angle between -pi and pi
+	 * 
+	 * @param angle: the angle to be converted
+	 */
+	public static double angleToNegPiToPi(double angle) {
+//		double returnAngle = angle;
+//		while (returnAngle < Math.PI) {
+//			returnAngle += Math.PI * 2;
+//		}
+//		while (returnAngle > Math.PI) {
+//			returnAngle -= Math.PI * 2;
+//		}
+//		return returnAngle;
+
+		return angle - Math.PI * 2 * Math.floor((angle + Math.PI) / (Math.PI * 2));
+	}
 }

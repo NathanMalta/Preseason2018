@@ -5,10 +5,22 @@ import org.usfirst.frc.team4541.robot.Constants;
 public class VelocityManager { //creates a trapezoidal velocity curve for the robot to follow
 	double dt;
 	double lastUpdateTime;
+	SynchronousPIDF pid;
+	MovingAverage avg;
 	
+	boolean isHeadingFrozen;
+	double frozenHeading = 0;
 	public VelocityManager() {
 		this.dt = -1;
 		this.lastUpdateTime = -1;
+//		this.pid = new SynchronousPIDF(13, 0, 6); //at 50 hz (0.02 ms)
+		this.pid = new SynchronousPIDF(19, 0, 0.5); //at 20 hz (0.05 ms)
+		this.pid.setContinuous(true);
+		this.pid.setInputRange(-Math.PI, Math.PI);
+		this.pid.setOutputRange(-Constants.kMaxTurningVelocity, Constants.kMaxTurningVelocity);
+//		this.avg = new MovingAverage(Constants.kSetpointSmoothingFactor);
+		this.avg = new MovingAverage(5);
+		this.isHeadingFrozen = false;
 	}
 	
 	/*
@@ -27,11 +39,42 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 //			this.updateDt(); //TODO: remove comment - just to allow speedup in simulation
 		}
 		double overallVel = this.getOverallVelocityTarget(segment, state);
-		double differential = this.getNextDifferential(Constants.kMaxAccelTurning, state.getDifferential(), 
-				this.getVelocityDifferentialSetpoint(segment, state)) / 2;
-//		double differential = this.getVelocityDifferentialSetpoint(segment, state) / 2;
-		return new RobotCmd(overallVel - differential, overallVel + differential); //TODO: make sure robot turns in the right direction
+//		double differential = this.getNextDifferential(Constants.kMaxAccelTurning, state.getDifferential(), 
+//				this.getVelocityDifferentialSetpoint(segment, state)) / 2;
+		
+		double differential = this.getVelocityDifferentialSetpoint(segment, state) / 2;
+		
+		
+//		Point targetPoint = segment.getLookaheadPoint(state.position, Constants.kLookaheadDistance);
+//		double newHeading = state.heading + this.getAngleChangeAfterDiffDecrease(state.getDifferential());
+//		double angleError = MathHelper.angleToNegPiToPi(Point.getAngleNeeded(state.position, targetPoint) - newHeading);
+		
+		//Just for testing, remove later
+//		Point lookahead = segment.getLookaheadPoint(state.position, Constants.kLookaheadDistance);
+//		double angleError = state.heading - Point.getAngleNeeded(state.position, lookahead);
+	
+//		if (differential > 0 && angleError < 0 || differential < 0 && angleError > 0) {
+//			System.out.println(state.position.getX() + "," +  state.position.getY() + ",," + lookahead.getX() + "," + lookahead.getY());
+//		} else {
+//			System.out.println(",," + state.position.getX() + "," + state.position.getY() + "," + lookahead.getX() + "," + lookahead.getY());
+//		}
+		
+		return new RobotCmd(overallVel - differential, overallVel + differential); //: make sure robot turns in the right direction
 	}
+	
+	/*
+	 * returns the heading the robot would be at if the current differential was slowed down to 0
+	 * 
+	 * @param currentDifferential: the current differential of the robot
+	 */
+//	public double getAngleChangeAfterDiffDecrease(double currentDifferential) {
+//		double angularVel = -1 * currentDifferential / Constants.kWheelBase;
+//		double secondsOfDecrease = 1 + Math.abs(currentDifferential) / Constants.kMaxAccelTurning;
+//		
+//		double angleChange = (angularVel * secondsOfDecrease) / 2;
+//		
+//		return angleChange;
+//	}
 	
 	
 	/*
@@ -41,6 +84,11 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 	 * @param state: the current position + velocity of the robot
 	 */
 	public double getOverallVelocityTarget(Segment segment, RobotPos state) {
+		
+		if (this.isHeadingFrozen) {
+			this.getNextVelocity(Constants.kMaxAccelSpeedUp, state.getVelocity(), 0);
+		}
+		
 		if (segment.isAcceleratingToEndpoint()) {
 			double requiredAccelToFinish = this.getAccelNeededToGetToVelByPoint(state.getVelocity(), segment.getEndVelocity(), segment.getDistanceToEndpoint(state.getVelocityLookaheadPoint(dt)));
 			return this.getNextVelocity(requiredAccelToFinish, state.getVelocity(), segment.getEndVelocity());
@@ -65,7 +113,7 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 //		double remainingDist = this.getDistanceRemaining(segment, state);
 //		double distanceToAccel = this.getDistanceNeededToAccel(this.getAccelForSpeedUp(segment, state), state.getVelocity(), segment.getEndVelocity());
 //		return remainingDist <= distanceToAccel;
-		double requiredAccelToFinish = this.getAccelNeededToGetToVelByPoint(state.getVelocity(), segment.getEndVelocity(), segment.getDistanceToEndpoint(state.getVelocityLookaheadPoint(dt)));
+		double requiredAccelToFinish = this.getAccelNeededToGetToVelByPoint(state.getVelocity(), segment.getEndVelocity(), segment.getDistanceToEndpoint(segment.getLookaheadPoint(state.position, Math.abs(state.getVelocity() * this.dt))));
 		return requiredAccelToFinish >= Constants.kMaxAccelSpeedUp;
 	}
 	
@@ -160,44 +208,57 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 	 * @param state: the current position + velocity of the robot
 	 */
 	public double getVelocityDifferentialSetpoint(Segment segment, RobotPos state) {
-		Point lookahead = segment.getClosestPointOnSegment(state.getLookaheadPoint());
-		double angleError;
-		if (Point.getAngleNeeded(state.position, lookahead) > 0.01) {
-			ConnectionArc arc = new ConnectionArc(state, lookahead, this.dt);
-			angleError = Point.getAngleNeeded(state.position, arc.getLookaheadPoint()) - state.heading;
-		} else {
-			angleError = Point.getAngleNeeded(state.position, lookahead) - state.heading;
-		}
-//		System.out.println(state.position + "," + lookahead + "," + Point.getAngleNeeded(state.position, lookahead));
-//		System.out.println(state.heading + "," + Point.getAngleNeeded(state.position, lookahead) + "," + state.getDifferential());
+		Point targetPoint = segment.getLookaheadPoint(state.position, Constants.kLookaheadDistance);
 
-//		while (angleError > Math.PI) {
-//			angleError -= Math.PI * 2;
-//		}
-//		while (angleError < -Math.PI) {
-//			angleError += Math.PI * 2;
-//		}
-//		
-//		double heading = state.heading;
-//		while (heading > Math.PI) {
-//			heading -= Math.PI * 2;
-//		}
-//		while (heading < -Math.PI) {
-//			heading += Math.PI * 2;
-//		}
+//		double newHeading = state.heading + this.getAngleChangeAfterDiffDecrease(state.getDifferential());
 		
-		//error, diff setpoint, heading, desired heading
-//		System.out.println(angleError + "," + heading + "," + Point.getAngleNeeded(state.position, lookahead));
+//		double angleError = MathHelper.angleToNegPiToPi(Point.getAngleNeeded(state.position, targetPoint) - state.heading);
+//		double angleError = MathHelper.angleToNegPiToPi(newHeading - Math.PI / 4);
+		
+//		System.out.println( MathHelper.angleToNegPiToPi(newHeading) + "," + MathHelper.angleToNegPiToPi(state.heading) + "," + angleError);
+//		System.out.println(MathHelper.angleToNegPiToPi(state.heading) + "," + Point.getAngleNeeded(state.position, targetPoint));
 //		System.out.println(angleError);
-//		System.out.println(angleError + "," + segment.getMaxVelocity() * Math.max(-1, Math.min(1, angleError * Constants.kTurnVelCoefficient)) +"," + heading + "," + Point.getAngleNeeded(state.position, lookahead));
-
+//		System.out.println(state.position.getX() + "," + state.position.getY() + "," + targetPoint.getX() + "," + targetPoint.getY());
+		double setpoint;
+		if (!this.isHeadingFrozen) {
+			setpoint = Point.getAngleNeeded(state.position, targetPoint);
+		} else {
+			setpoint = this.frozenHeading;
+		}
+		
+		avg.add(setpoint);
+		this.pid.setSetpoint(avg.getAvg());
+		this.pid.calculate(state.heading, this.dt);
+//		System.out.println(state.heading + "," + pid.getSetpoint() + "," + pid.getError());
+		double output = this.pid.get();
+		
+		return output;
+		
+		
 //		return Constants.kTurningVelocity * Math.max(-1, Math.min(1, angleError * Constants.kTurnVelCoefficient));
+
 		
-//		System.out.println((angleError * Constants.kWheelBase) / this.dt);
 		
-		System.out.println(state.heading + "," + (Point.getAngleNeeded(state.position, lookahead) + "," + (angleError * Constants.kWheelBase) / this.dt * Constants.kTurnVelCoefficient));
-		
-		return (angleError * Constants.kWheelBase) / (this.dt) * Constants.kTurnVelCoefficient;
+//		if (angleAfterDecrease < angleError) { //TODO: make work with different signs
+//			
+//			if (angleError > 0) {
+//				return Constants.kMaxVelocity; 
+//			} else if (angleError < 0){
+//				return -Constants.kMaxVelocity;
+//			} else {
+//				return 0;
+//			}
+//			
+//		} else { 
+//			//we will overshoot so decrease absolute value of differential
+//			if (state.getDifferential() > 0) {
+//				return state.getDifferential() + Constants.kMaxAccelTurning * this.dt;
+//			} else if (state.getDifferential() < 0) {
+//				return state.getDifferential() - Constants.kMaxAccelTurning * this.dt;
+//			} else {
+//				return 0;
+//			}
+//		}
 		
 	}
 	
@@ -210,7 +271,7 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 	 * @param maxTurnAccel: the max acceleration allocated to changing robot heading
 	 */
 	public double getNextDifferential(double maxTurnAccel, double currentDiff, double desiredDiff) {
-		double delta = desiredDiff - currentDiff;
+		double delta = currentDiff - desiredDiff;
 		if (Math.abs(delta) <= (this.dt * maxTurnAccel)) {
 			// if moving to the desired velocity is allowed within acceleration constraints, 
 			// return the desired velocity
@@ -218,14 +279,19 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 			
 		} else if (delta > 0) {
 			// The next velocity is greater than the current velocity, speed up the robot
-			return currentDiff + (this.dt * maxTurnAccel);
+			return currentDiff - (this.dt * maxTurnAccel);
 		} else if (delta < 0) {
 			// The next velocity is less than the current velocity, slow down the robot
-			return currentDiff - (this.dt * maxTurnAccel);
+			return currentDiff + (this.dt * maxTurnAccel);
 		} else {
 			// The next velocity is the same as the current velocity, maintain current velocity
 			return currentDiff;
 		}
+	}
+	
+	public void freezeHeading(double heading) {
+		this.isHeadingFrozen = true;
+		this.frozenHeading = heading;
 	}
 	
 }

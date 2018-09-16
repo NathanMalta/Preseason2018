@@ -35,12 +35,19 @@ public class Path {
 			// or say that the robot is done following the path
 			if (this.canMoveOnToNextSegment()) {
 				this.moveOnToNextSegment();
-			} else {
-				if (robotPos.getVelocity() < 0.1) {
-					this.didFinish = true;
-				}
 			}
 		}
+		if (!this.canMoveOnToNextSegment()) {
+			if (Point.getDistance(currentSegment.getEndPoint(), currentPos) < Constants.kStopSteeringDistance) {
+				manager.freezeHeading(robotPos.heading);
+			}
+			
+			if (robotPos.getVelocity() < 0.5) {
+				this.didFinish = true;
+			}
+		}
+		
+
 		
 		return manager.getVelCmd(currentSegment, robotPos);
 	}
