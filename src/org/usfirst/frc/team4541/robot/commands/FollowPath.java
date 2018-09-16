@@ -26,6 +26,8 @@ public class FollowPath extends Command {
 		this.path = this.getPathFromType(pathType);
 		requires(Robot.drivetrain);
 		
+		//TODO: tune velocity PID Controllers
+		
 		rPID = new PIDController(0, 0, 0, 0, new PIDSource() {
 			@Override
 			public void setPIDSourceType(PIDSourceType pidSource) {
@@ -85,7 +87,7 @@ public class FollowPath extends Command {
 	@Override
 	public void execute() {
 		RobotPos latestPos = new RobotPos(Robot.state.getPosition(),
-				Robot.gyro.getYaw(), Robot.drivetrain.getRightVel(), Robot.drivetrain.getLeftVel());
+				Math.toRadians(Robot.gyro.getYaw()), Robot.drivetrain.getRightVel(), Robot.drivetrain.getLeftVel());
 		RobotCmd cmd = this.path.update(latestPos);
 		rPID.setSetpoint(cmd.getRightVel());
 		lPID.setSetpoint(cmd.getLeftVel());
