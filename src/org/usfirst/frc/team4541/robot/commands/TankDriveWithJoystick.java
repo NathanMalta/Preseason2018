@@ -20,8 +20,8 @@ public class TankDriveWithJoystick extends Command {
 	}
 	@Override
 	protected void initialize() {
-		Robot.drivetrain.getRightTalon().set(ControlMode.Velocity, 0);
-    	Robot.drivetrain.getLeftTalon().set(ControlMode.Velocity, 0);
+		Robot.drivetrain.rightMotor1.set(0);
+    	Robot.drivetrain.leftMotor1.set(0);
 	}
 	// Called repeatedly when this Command is scheduled to run
 	@Override

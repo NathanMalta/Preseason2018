@@ -14,12 +14,12 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 		this.dt = -1;
 		this.lastUpdateTime = -1;
 //		this.pid = new SynchronousPIDF(13, 0, 6); //at 50 hz (0.02 ms)
-		this.pid = new SynchronousPIDF(19, 0, 0.5); //at 20 hz (0.05 ms)
+		this.pid = new SynchronousPIDF(150, 0, 0); //at 20 hz (0.05 ms)
 		this.pid.setContinuous(true);
 		this.pid.setInputRange(-Math.PI, Math.PI);
 		this.pid.setOutputRange(-Constants.kMaxTurningVelocity, Constants.kMaxTurningVelocity);
 //		this.avg = new MovingAverage(Constants.kSetpointSmoothingFactor);
-		this.avg = new MovingAverage(5);
+		this.avg = new MovingAverage(10);
 		this.isHeadingFrozen = false;
 	}
 	

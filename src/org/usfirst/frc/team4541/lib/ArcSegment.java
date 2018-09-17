@@ -123,20 +123,17 @@ public class ArcSegment implements Segment {
 		}
 		
 		//calculated needed arc angle with s = theta * r
-		double angleNeeded = lookahead / this.radius;
-		//calculate the linear distance between the target and lookahead
-		double oppLen = Point.getOppSideLength(this.radius, this.radius, angleNeeded);
-		//create a translation that will move between current point and target point
+		double theta = lookahead / this.radius;
+		Point closestPoint = this.getClosestPointOnSegment(robotPosition);
 		
-		double theta = (Math.PI - angleNeeded) / 2;
+		//Rotate the closest point by positive and negative theta
+		double x1 = Math.cos(theta) * (closestPoint.getX() - this.centerPoint.getX()) - Math.sin(theta) * (closestPoint.getY() - this.centerPoint.getY()) + this.centerPoint.getX();
+		double y1 = Math.sin(theta) * (closestPoint.getX() - this.centerPoint.getX()) + Math.cos(theta) * (closestPoint.getY() - this.centerPoint.getY()) + this.centerPoint.getY();
+		Point p1 = new Point(x1, y1);
 		
-		Point translationRequired = new Point(Math.cos(theta) * oppLen, Math.cos(theta) * oppLen);
-		
-		//apply the translation forwards and backwards
-		Point currentPos = this.getClosestPointOnSegment(robotPosition);
-		Point p1 = Point.addPoints(currentPos, translationRequired);
-		Point p2 = Point.subtractPoints(currentPos, translationRequired);
-		
+		double x2 = Math.cos(-theta) * (closestPoint.getX() - this.centerPoint.getX()) - Math.sin(-theta) * (closestPoint.getY() - this.centerPoint.getY()) + this.centerPoint.getX();
+		double y2 = Math.sin(-theta) * (closestPoint.getX() - this.centerPoint.getX()) + Math.cos(-theta) * (closestPoint.getY() - this.centerPoint.getY()) + this.centerPoint.getY();
+		Point p2 = new Point(x2, y2);
 		
 		//figure out which point gets us closer to the endpoint and then return that point
 		if (Point.getDistance(p1, this.endPoint) < Point.getDistance(p2, endPoint)) {

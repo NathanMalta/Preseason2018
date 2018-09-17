@@ -42,12 +42,10 @@ public class Path {
 				manager.freezeHeading(robotPos.heading);
 			}
 			
-			if (robotPos.getVelocity() < 0.5) {
+			if (robotPos.getVelocity() < 0.5 && Point.getDistance(robotPos.position, currentSegment.getEndPoint()) < Constants.kPathPursuitTolerance) {
 				this.didFinish = true;
 			}
 		}
-		
-
 		
 		return manager.getVelCmd(currentSegment, robotPos);
 	}

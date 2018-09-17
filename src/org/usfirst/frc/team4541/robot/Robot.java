@@ -65,7 +65,6 @@ public class Robot extends TimedRobot {
 	@Override
 	public void robotInit() {
 		gyro = new AHRS(SPI.Port.kMXP);
-
 		drivetrain = new DriveTrain();
 		oi = new OI();
 		state = new RobotState(0, 0, 0, drivetrain.getRightPos(), drivetrain.getLeftPos());
@@ -81,7 +80,7 @@ public class Robot extends TimedRobot {
 	public void disabledInit() {
 		Scheduler.getInstance().removeAll();
 		drivetrain.configTalons();
-
+		state.end();
 	}
 
 	@Override
@@ -113,6 +112,10 @@ public class Robot extends TimedRobot {
 	public void teleopInit() {
 		state.end();
 		gyro.setAngleAdjustment(0);
+		drivetrain.leftMotor1.enableVoltageCompensation(true);
+		drivetrain.leftMotor2.enableVoltageCompensation(true);
+		drivetrain.rightMotor1.enableVoltageCompensation(true);
+		drivetrain.rightMotor2.enableVoltageCompensation(true);
 	}
 
 	/**
@@ -120,10 +123,14 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
-		System.out.println(state.getX() + " , " + state.getY() + " , " + state.getHeading());
-//		System.out.println(drivetrain.getLeftPos() + ", " + drivetrain.getRightPos());
+		//for checking if RobotState is correctly creating position
+		System.out.println(state.getPosition() + " , " + state.getHeading());
+		//for tuning velocity PIDF - (mostly going to be I and F terms cause its velocity)
+		System.out.println(drivetrain.leftMotor1.getMotorOutputPercent() + "," + drivetrain.getLeftVel()
+		+ "," + drivetrain.rightMotor1.getMotorOutputPercent() + "," + drivetrain.getRightVel());
+		
+
 		Scheduler.getInstance().run();
-		log();
 	}
 
 	/**
@@ -131,10 +138,6 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void testPeriodic() {
-	}
-
-	private void log() {
-		Robot.drivetrain.log();
 	}
 
 }
