@@ -146,5 +146,10 @@ public class RobotState {
 	public void end() {
 		this.running = false;
 	}
+	
+	public void zero() {
+		this.xPos = 0;
+		this.yPos = 0;
+	}
 
 }

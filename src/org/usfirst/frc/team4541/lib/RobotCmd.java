@@ -17,4 +17,9 @@ public class RobotCmd {
 		return this.rVelDesired;
 	}
 	
+	@Override
+	public String toString() {
+		return "left:" + this.lVelDesired + " right:" + this.rVelDesired;
+	}
+	
 }

@@ -111,4 +111,20 @@ public class Point {
 		//solve for side length with law of cosines
 		return Math.sqrt(a*a + b*b - 2 * a * b * Math.cos(thetaC));
 	}
+	
+	/**
+	 * Converts the reference frame of p1 such that p2 is the origin and rotates it by theta
+	 * 
+	 * @param p1: the point desired to change origin //TODO: maybe improve comments; wrote this when I was tired
+	 * @param p2: new origin
+	 * @param heading: the way that p1 will be rotated
+	 * @return: p1 relative to p2 rotated by angle theta
+	 */
+	public static Point getP1RelativeToP2(Point p1, Point p2, double theta) {
+		double angle = theta + Math.PI / 2;  //Convert to a heading zeroed at the x axis (?)
+		double x = (p1.getX() - p2.getX()) * Math.cos(angle) + (p1.getY() - p2.getY()) * Math.sin(angle);
+		double y = -1 * (p1.getX() - p2.getX()) * Math.sin(angle) + (p1.getY() - p2.getY()) * Math.cos(angle);
+		
+		return new Point(x, y);
+	}
 }

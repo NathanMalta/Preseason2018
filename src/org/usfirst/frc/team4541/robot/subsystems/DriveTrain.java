@@ -38,7 +38,7 @@ public class DriveTrain extends Subsystem {
 
 	public DriveTrain() {
 		super();
-//		drive.setSafetyEnabled(false);
+		drive.setSafetyEnabled(false);
 		this.configTalons();
 		leftMotor2.follow(leftMotor1);
 		rightMotor2.follow(rightMotor1);
@@ -130,9 +130,9 @@ public class DriveTrain extends Subsystem {
 		rightMotor1.configPeakOutputReverse(-1, Constants.kTimeoutMs);
 
 		// set closed loop gains in slot0  //TODO: Tune
-		rightMotor1.config_kF(Constants.kPIDLoopIdx, 0, Constants.kTimeoutMs);
-		rightMotor1.config_kP(Constants.kPIDLoopIdx, 0, Constants.kTimeoutMs);
-		rightMotor1.config_kI(Constants.kPIDLoopIdx, 0, Constants.kTimeoutMs);
+		rightMotor1.config_kF(Constants.kPIDLoopIdx, 0.75, Constants.kTimeoutMs);
+		rightMotor1.config_kP(Constants.kPIDLoopIdx, 0.6, Constants.kTimeoutMs);
+		rightMotor1.config_kI(Constants.kPIDLoopIdx, 0.0, Constants.kTimeoutMs);
 		rightMotor1.config_kD(Constants.kPIDLoopIdx, 0, Constants.kTimeoutMs);
 
 		leftMotor1.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
@@ -145,9 +145,9 @@ public class DriveTrain extends Subsystem {
 		leftMotor1.configPeakOutputReverse(-1, Constants.kTimeoutMs);
 
 		// set closed loop gains in slot0  //TODO: Tune
-		leftMotor1.config_kF(Constants.kPIDLoopIdx, 0, Constants.kTimeoutMs);
-		leftMotor1.config_kP(Constants.kPIDLoopIdx, 0, Constants.kTimeoutMs);
-		leftMotor1.config_kI(Constants.kPIDLoopIdx, 0, Constants.kTimeoutMs);
+		leftMotor1.config_kF(Constants.kPIDLoopIdx, 0.75, Constants.kTimeoutMs);
+		leftMotor1.config_kP(Constants.kPIDLoopIdx, 0.6, Constants.kTimeoutMs);
+		leftMotor1.config_kI(Constants.kPIDLoopIdx, 0.0, Constants.kTimeoutMs);
 		leftMotor1.config_kD(Constants.kPIDLoopIdx, 0, Constants.kTimeoutMs);
 	}
 	
@@ -159,6 +159,12 @@ public class DriveTrain extends Subsystem {
 	public void setLeftVel(double vel) {
 		// convert velocity from inches/sec to pulses/100ms
 		double targetVel = vel * Constants.kSensorUnitsPerInch / 10;
+		if (targetVel > 0) {
+			targetVel += 50; 
+		} else if (targetVel < 0){
+			targetVel -= 50;
+		}
+		
 		// set the current setpoint of the talon's PIDF Controller to the desired velocity
 		leftMotor1.set(ControlMode.Velocity, targetVel);
 	}
@@ -171,6 +177,12 @@ public class DriveTrain extends Subsystem {
 	public void setRightVel(double vel) {
 		// convert velocity from inches/sec to pulses/100ms
 		double targetVel = vel * Constants.kSensorUnitsPerInch / 10;
+		if (targetVel > 0) {
+			targetVel += 50; 
+		} else if (targetVel < 0){
+			targetVel -= 50;
+		}
+		
 		// set the current setpoint of the talon's PIDF Controller to the desired velocity
 		rightMotor1.set(ControlMode.Velocity, targetVel);
 	}

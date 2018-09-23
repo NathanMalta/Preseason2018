@@ -79,11 +79,18 @@ public class FollowPath extends Command {
 //		rPID.setOutputRange(-1, 1);
 	}
 	
+	@Override
+	protected void initialize() {
+		Robot.drivetrain.setLeftVel(0);
+		Robot.drivetrain.setRightVel(0);
+		Robot.state.zero();
+	}
+	
 	public Path getPathFromType(PATH_TYPE pathType) {
 		switch (pathType) {
 		case TEST_PATH: {
 			path = new Path();
-			Segment seg1 = new LineSegment(new Point(0, 0), new Point(60, 0), 24, 0);
+			Segment seg1 = new LineSegment(new Point(0, 0), new Point(60, 0), 12, 0);
 			path.addSegment(seg1);
 			return path;
 		} default: {
@@ -95,17 +102,28 @@ public class FollowPath extends Command {
 	@Override
 	public void execute() {
 		RobotPos latestPos = new RobotPos(Robot.state.getPosition(),
-				Math.toRadians(Robot.gyro.getYaw()), Robot.drivetrain.getRightVel(), Robot.drivetrain.getLeftVel());
+				Robot.state.getHeading(), Robot.drivetrain.getRightVel(), Robot.drivetrain.getLeftVel());
 		RobotCmd cmd = this.path.update(latestPos);
 //		rPID.setSetpoint(cmd.getRightVel());
 //		lPID.setSetpoint(cmd.getLeftVel());
+		System.out.println(Robot.drivetrain.leftMotor1.getClosedLoopTarget(0) +  "," + Robot.drivetrain.rightMotor1.getClosedLoopTarget(0));
+		System.out.println(cmd.getLeftVel() + "," + cmd.getRightVel());
 		Robot.drivetrain.setLeftVel(cmd.getLeftVel());
 		Robot.drivetrain.setRightVel(cmd.getRightVel());
+		
+//		System.out.println(Robot.state.getPosition() + " , " + Robot.state.getHeading());
 	}
 	
 	@Override
 	protected boolean isFinished() {
 		return this.path.isFinished();
+	}
+	
+	@Override
+	protected void end() {
+		Robot.drivetrain.setLeftVel(0);
+		Robot.drivetrain.setRightVel(0);
+		System.out.println("FINISHED PATH");
 	}
 
 }

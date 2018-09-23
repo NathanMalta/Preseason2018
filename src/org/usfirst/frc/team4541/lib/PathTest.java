@@ -27,15 +27,15 @@ public class PathTest {
 //		System.out.println(distNeeded);
 		
 		Path path = new Path();
-		Segment seg1 = new LineSegment(new Point(0, 0), new Point(60, 0), 30, 24);
+		Segment seg1 = new LineSegment(new Point(0, 0), new Point(60, 0), 48, 24);
 		path.addSegment(seg1);
-		Segment seg2 = new ArcSegment(new Point(60, 0), new Point(90, 30), new Point(60, 30), 24, 24);
+		Segment seg2 = new ArcSegment(new Point(60, 0), new Point(90, 30), new Point(60, 30), 24);
 		path.addSegment(seg2);
-		Segment seg3 = new LineSegment(new Point(90, 30), new Point(90, 80), 24, 12);
+		Segment seg3 = new LineSegment(new Point(90, 30), new Point(90, 80), 48, 24);
 		path.addSegment(seg3);
-		Segment seg4 = new ArcSegment(new Point(90, 80), new Point(110, 100), new Point(110, 80), 12);
+		Segment seg4 = new ArcSegment(new Point(90, 80), new Point(110, 100), new Point(110, 80), 24);
 		path.addSegment(seg4);
-		Segment seg5 = new LineSegment(new Point(110, 100), new Point(150, 100), 60, 0);
+		Segment seg5 = new LineSegment(new Point(110, 100), new Point(150, 100), 48, 0);
 		path.addSegment(seg5);
 		
 //		Segment seg1 = new LineSegment(new Point(0, 0), new Point(60, 0), 24, 24);
@@ -58,7 +58,7 @@ public class PathTest {
 //			double heading = currentPos.heading - ((Constants.kWheelDiameter/2) / Constants.kWheelBase) * ftToRad(cmd.getRightVel() - cmd.getLeftVel()) * path.manager.dt;
 //			double heading = (currentPos.heading - currentPos.getDifferential() * path.manager.dt) / (Constants.kWheelDiameter / 2);
 			
-			double heading = currentPos.heading + ((cmd.getRightVel() - cmd.getLeftVel()) * 2 / Constants.kWheelBase) * path.manager.dt;
+			double heading = currentPos.heading + ((cmd.getRightVel() - cmd.getLeftVel()) / Constants.kWheelBase) * path.manager.dt;
 			
 //			double dh = currentPos.heading - heading;
 //			if (dh > 0.1) {
@@ -70,9 +70,10 @@ public class PathTest {
 			
 			double xPos = currentPos.position.getX() + (cmd.getLeftVel() + cmd.getRightVel())/2 * path.manager.dt * Math.cos(heading);
 			double yPos = currentPos.position.getY() + (cmd.getLeftVel() + cmd.getRightVel())/2 * path.manager.dt * Math.sin(heading);
-			currentPos = new RobotPos(xPos, yPos, heading, cmd.lVelDesired, cmd.rVelDesired);
-			System.out.println(currentPos);
+			currentPos = new RobotPos(xPos, yPos, heading, cmd.rVelDesired, cmd.lVelDesired);
 			pathTime += Constants.kDefaultDt;
+			System.out.println(currentPos); 
+//			System.out.println(currentPos.getLeftVel() + "," + currentPos.getRightVel() + "," + currentPos.getVelocity());
 		}
 		System.out.println("Estimate time Required " + pathTime + " sec");
 		

@@ -124,10 +124,12 @@ public class Robot extends TimedRobot {
 	@Override
 	public void teleopPeriodic() {
 		//for checking if RobotState is correctly creating position
-		System.out.println(state.getPosition() + " , " + state.getHeading());
+//		System.out.println(state.getPosition() + " , " + state.getHeading());
 		//for tuning velocity PIDF - (mostly going to be I and F terms cause its velocity)
-		System.out.println(drivetrain.leftMotor1.getMotorOutputPercent() + "," + drivetrain.getLeftVel()
-		+ "," + drivetrain.rightMotor1.getMotorOutputPercent() + "," + drivetrain.getRightVel());
+		System.out.println(drivetrain.leftMotor1.getMotorOutputPercent() + "," + drivetrain.leftMotor1.getSelectedSensorVelocity(0)
+		+ "," + drivetrain.rightMotor1.getMotorOutputPercent() + "," + drivetrain.rightMotor1.getSelectedSensorVelocity(0));
+		
+//		System.out.println(drivetrain.leftMotor1.getSelectedSensorVelocity(0) + "," + drivetrain.rightMotor1.getSelectedSensorVelocity(0));
 		
 
 		Scheduler.getInstance().run();
