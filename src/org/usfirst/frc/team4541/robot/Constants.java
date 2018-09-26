@@ -8,8 +8,8 @@ public class Constants { //TODO: play with these values once we get a robot
 //	public static final double kMaxJerk = 6; //(NOT CURRENTLY USED) in inches/sec^3; the max jerk the robot can be commanded to experience when traveling a path
 	public static final double kDefaultDt = 0.05; // in seconds; the default dt for pathfinding calculations
 	
-	public static final double kMaxAccelSpeedUp = 60; //in inches/sec^2; the max acceleration the robot can be commanded to experience when traveling a path
-	public static final double kMaxAccelTurning = 60;
+	public static final double kMaxAccelSpeedUp = 50; //in inches/sec^2; the max acceleration the robot can be commanded to experience when traveling a path
+	public static final double kMaxAccelTurning = 80;
 	
 	public static final double kWheelDiameter = 6; // in inches; the diameter of the drive wheels
 	public static final double kWheelBase = 30; //in inches; the distance between the left and right drive wheels

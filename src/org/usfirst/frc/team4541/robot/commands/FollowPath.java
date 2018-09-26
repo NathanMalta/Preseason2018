@@ -28,55 +28,6 @@ public class FollowPath extends Command {
 	public FollowPath(PATH_TYPE pathType) {
 		this.path = this.getPathFromType(pathType);
 		requires(Robot.drivetrain);
-		
-		//TODO: tune velocity PID Controllers
-		
-//		rPID = new PIDController(0, 0, 0, 0, new PIDSource() {
-//			@Override
-//			public void setPIDSourceType(PIDSourceType pidSource) {
-//			}
-//			@Override
-//			public PIDSourceType getPIDSourceType() {
-//				return PIDSourceType.kDisplacement;
-//			}
-//			@Override
-//			public double pidGet() {
-//				return Robot.drivetrain.getRightVel();
-//			}
-//			
-//		}, new PIDOutput() {
-//			@Override
-//			public void pidWrite(double output) {
-//				Robot.drivetrain.rightMotor1.set(ControlMode.PercentOutput, output);
-//				Robot.drivetrain.rightMotor1.set(ControlMode.PercentOutput, output);
-//			}
-//		});
-//		
-//		lPID = new PIDController(0, 0, 0, 0, new PIDSource() {
-//			@Override
-//			public void setPIDSourceType(PIDSourceType pidSource) {
-//			}
-//			@Override
-//			public PIDSourceType getPIDSourceType() {
-//				return PIDSourceType.kDisplacement;
-//			}
-//			@Override
-//			public double pidGet() {
-//				return Robot.drivetrain.getLeftVel();
-//			}
-//			
-//		}, new PIDOutput() {
-//			@Override
-//			public void pidWrite(double output) {
-//				Robot.drivetrain.leftMotor1.set(ControlMode.PercentOutput, output);
-//				Robot.drivetrain.leftMotor2.set(ControlMode.PercentOutput, output);
-//			}
-//		});
-//		lPID.setInputRange(-Constants.kMaxVelocity, Constants.kMaxVelocity); //objective velocity as input
-//		lPID.setOutputRange(-1, 1);
-//		
-//		rPID.setInputRange(-Constants.kMaxVelocity, Constants.kMaxVelocity); //objective velocity as input
-//		rPID.setOutputRange(-1, 1);
 	}
 	
 	@Override
@@ -90,7 +41,7 @@ public class FollowPath extends Command {
 		switch (pathType) {
 		case TEST_PATH: {
 			path = new Path();
-			Segment seg1 = new LineSegment(new Point(0, 0), new Point(60, 0), 12, 0);
+			Segment seg1 = new LineSegment(new Point(0, 0), new Point(60, 0), 18, 0);
 			path.addSegment(seg1);
 			return path;
 		} default: {
@@ -102,14 +53,17 @@ public class FollowPath extends Command {
 	@Override
 	public void execute() {
 		RobotPos latestPos = new RobotPos(Robot.state.getPosition(),
-				Robot.state.getHeading(), Robot.drivetrain.getRightVel(), Robot.drivetrain.getLeftVel());
+				Robot.state.getHeading(), Robot.drivetrain.getRightVel(), -Robot.drivetrain.getLeftVel());
 		RobotCmd cmd = this.path.update(latestPos);
-//		rPID.setSetpoint(cmd.getRightVel());
-//		lPID.setSetpoint(cmd.getLeftVel());
-		System.out.println(Robot.drivetrain.leftMotor1.getClosedLoopTarget(0) +  "," + Robot.drivetrain.rightMotor1.getClosedLoopTarget(0));
-		System.out.println(cmd.getLeftVel() + "," + cmd.getRightVel());
-		Robot.drivetrain.setLeftVel(cmd.getLeftVel());
-		Robot.drivetrain.setRightVel(cmd.getRightVel());
+		
+		//debug print: lTarget, rTarget, lActualVel, rActualVel, RobotPosition
+		System.out.println(Robot.drivetrain.leftMotor1.getClosedLoopTarget(0) +  "," + Robot.drivetrain.rightMotor1.getClosedLoopTarget(0) + "," + Robot.drivetrain.leftMotor1.getSelectedSensorVelocity(0) + "," + Robot.drivetrain.rightMotor1.getSelectedSensorVelocity(0) + "," + Robot.state.getPosition());
+		
+//		Robot.drivetrain.setLeftVel(cmd.getLeftVel());
+//		Robot.drivetrain.setRightVel(cmd.getRightVel());
+		
+		Robot.drivetrain.setLeftVel(cmd.getRightVel());
+		Robot.drivetrain.setRightVel(-cmd.getLeftVel());
 		
 //		System.out.println(Robot.state.getPosition() + " , " + Robot.state.getHeading());
 	}

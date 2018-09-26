@@ -10,12 +10,20 @@ public class LineSegment implements Segment {
 	
 	boolean isAccelToEndpoint = false;
 	
-	public LineSegment(Point startPoint, Point endPoint, double maxVel, double endVel) {
+	double endpointAccelDistance;
+	
+	public LineSegment(Point startPoint, Point endPoint, double maxVel, double endVel, double endpointAccelDistance) {
 		this.startPoint = startPoint;
 		this.endPoint = endPoint;
 		
 		this.maxVel = maxVel;
 		this.endVel = endVel;
+		
+		this.endpointAccelDistance = endpointAccelDistance;
+	}
+	
+	public LineSegment(Point startPoint, Point endPoint, double maxVel, double endVel) {
+		this(startPoint, endPoint, maxVel, endVel, 0);
 	}
 	
 	public LineSegment(Point startPoint, Point endPoint, double maxVel) {
@@ -123,6 +131,11 @@ public class LineSegment implements Segment {
 		} else {
 			return p2;
 		}
+	}
+
+	@Override
+	public double getEndpointAccelDistance() {
+		return this.endpointAccelDistance;
 	}
 
 }

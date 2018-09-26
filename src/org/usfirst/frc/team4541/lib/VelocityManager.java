@@ -94,7 +94,7 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 //		double remainingDist = this.getDistanceRemaining(segment, state);
 //		double distanceToAccel = this.getDistanceNeededToAccel(this.getAccelForSpeedUp(segment, state), state.getVelocity(), segment.getEndVelocity());
 //		return remainingDist <= distanceToAccel;
-		double requiredAccelToFinish = this.getAccelNeededToGetToVelByPoint(state.getVelocity(), segment.getEndVelocity(), segment.getDistanceToEndpoint(segment.getLookaheadPoint(state.position, Math.abs(state.getVelocity() * this.dt))));
+		double requiredAccelToFinish = this.getAccelNeededToGetToVelByPoint(state.getVelocity(), segment.getEndVelocity(), segment.getDistanceToEndpoint(segment.getLookaheadPoint(state.position, Math.abs(state.getVelocity() * this.dt))) - segment.getEndpointAccelDistance());
 		return requiredAccelToFinish >= Constants.kMaxAccelSpeedUp;
 	}
 	

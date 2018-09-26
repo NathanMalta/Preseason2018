@@ -27,23 +27,27 @@ public class PathTest {
 //		System.out.println(distNeeded);
 		
 		Path path = new Path();
-		Segment seg1 = new LineSegment(new Point(0, 0), new Point(60, 0), 48, 24);
-		path.addSegment(seg1);
-		Segment seg2 = new ArcSegment(new Point(60, 0), new Point(90, 30), new Point(60, 30), 24);
-		path.addSegment(seg2);
-		Segment seg3 = new LineSegment(new Point(90, 30), new Point(90, 80), 48, 24);
-		path.addSegment(seg3);
-		Segment seg4 = new ArcSegment(new Point(90, 80), new Point(110, 100), new Point(110, 80), 24);
-		path.addSegment(seg4);
-		Segment seg5 = new LineSegment(new Point(110, 100), new Point(150, 100), 48, 0);
-		path.addSegment(seg5);
-		
-//		Segment seg1 = new LineSegment(new Point(0, 0), new Point(60, 0), 24, 24);
+//		Segment seg1 = new LineSegment(new Point(0, 0), new Point(60, 0), 48, 24,    15);
 //		path.addSegment(seg1);
-//		Segment seg2 = new ArcSegment(new Point(60, 0), new Point(90, 30), new Point(60, 30), 36, 36);
+//		Segment seg2 = new ArcSegment(new Point(60, 0), new Point(90, 30), new Point(60, 30), 24);
 //		path.addSegment(seg2);
-//		Segment seg3 = new LineSegment(new Point(90, 30), new Point(90, 100), 60, 0);
+//		Segment seg3 = new LineSegment(new Point(90, 30), new Point(90, 80), 48, 24,   15);
 //		path.addSegment(seg3);
+//		Segment seg4 = new ArcSegment(new Point(90, 80), new Point(110, 100), new Point(110, 80), 24);
+//		path.addSegment(seg4);
+//		Segment seg5 = new LineSegment(new Point(110, 100), new Point(150, 100), 48, 0);
+//		path.addSegment(seg5);
+		
+		Segment seg1 = new LineSegment(new Point(0, 0), new Point(60, 0), 50, 5, 12);
+		path.addSegment(seg1);
+		Segment seg2 = new ArcSegment(new Point(60, 0), new Point(90, 30), new Point(60, 30), 12, 10);
+		path.addSegment(seg2);
+		Segment seg3 = new LineSegment(new Point(90, 30), new Point(90, 200), 60, 24, 15);
+		path.addSegment(seg3);
+		Segment seg4 = new ArcSegment(new Point(90, 200), new Point(50, 240), new Point(50, 200), 24);
+		path.addSegment(seg4);
+		Segment seg5 = new LineSegment(new Point(50, 240), new Point(0, 240), 30, 0);
+		path.addSegment(seg5);
 		
 		RobotPos currentPos = new RobotPos(0,0, 0, 0,0);
 		

@@ -20,4 +20,6 @@ public interface Segment {
 	
 	public boolean isAcceleratingToEndpoint();
 	
+	public double getEndpointAccelDistance();
+	
 }

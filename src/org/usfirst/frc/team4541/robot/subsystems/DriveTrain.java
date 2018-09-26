@@ -130,7 +130,7 @@ public class DriveTrain extends Subsystem {
 		rightMotor1.configPeakOutputReverse(-1, Constants.kTimeoutMs);
 
 		// set closed loop gains in slot0  //TODO: Tune
-		rightMotor1.config_kF(Constants.kPIDLoopIdx, 0.75, Constants.kTimeoutMs);
+		rightMotor1.config_kF(Constants.kPIDLoopIdx, 0.7, Constants.kTimeoutMs);
 		rightMotor1.config_kP(Constants.kPIDLoopIdx, 0.6, Constants.kTimeoutMs);
 		rightMotor1.config_kI(Constants.kPIDLoopIdx, 0.0, Constants.kTimeoutMs);
 		rightMotor1.config_kD(Constants.kPIDLoopIdx, 0, Constants.kTimeoutMs);
@@ -145,7 +145,7 @@ public class DriveTrain extends Subsystem {
 		leftMotor1.configPeakOutputReverse(-1, Constants.kTimeoutMs);
 
 		// set closed loop gains in slot0  //TODO: Tune
-		leftMotor1.config_kF(Constants.kPIDLoopIdx, 0.75, Constants.kTimeoutMs);
+		leftMotor1.config_kF(Constants.kPIDLoopIdx, 0.7, Constants.kTimeoutMs);
 		leftMotor1.config_kP(Constants.kPIDLoopIdx, 0.6, Constants.kTimeoutMs);
 		leftMotor1.config_kI(Constants.kPIDLoopIdx, 0.0, Constants.kTimeoutMs);
 		leftMotor1.config_kD(Constants.kPIDLoopIdx, 0, Constants.kTimeoutMs);

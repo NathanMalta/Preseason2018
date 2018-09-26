@@ -16,7 +16,9 @@ public class ArcSegment implements Segment {
 	
 	boolean isAccelToEndpoint = false;
 	
-	public ArcSegment(Point startPoint, Point endPoint, Point centerPoint, double maxVel, double endVel) {
+	double endpointAccelDistance;
+	
+	public ArcSegment(Point startPoint, Point endPoint, Point centerPoint, double maxVel, double endVel, double endpointAccelDistance) {
 		this.startPoint = startPoint;
 		this.endPoint = endPoint;
 		this.centerPoint = centerPoint;
@@ -30,6 +32,12 @@ public class ArcSegment implements Segment {
 		this.endVel = endVel;
 		
 		isAccelToEndpoint = false;
+		
+		this.endpointAccelDistance = endpointAccelDistance;
+	}
+	
+	public ArcSegment(Point startPoint, Point endPoint, Point centerPoint, double maxVel, double endVel) {
+		this(startPoint, endPoint, centerPoint, maxVel, endVel, 0);
 	}
 	
 	public ArcSegment(Point startPoint, Point endPoint, Point centerPoint, double maxVel) {
@@ -141,6 +149,11 @@ public class ArcSegment implements Segment {
 		} else {
 			return p2;
 		}
+	}
+
+	@Override
+	public double getEndpointAccelDistance() {
+		return this.endpointAccelDistance;
 	}
 
 }

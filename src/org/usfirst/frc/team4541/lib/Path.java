@@ -42,7 +42,7 @@ public class Path {
 				manager.freezeHeading(robotPos.heading);
 			}
 			
-			if (robotPos.getVelocity() < 0.5 && Point.getDistance(robotPos.position, currentSegment.getStartPoint()) > Point.getDistance(robotPos.position, currentSegment.getEndPoint())) {
+			if (robotPos.getVelocity() < 0.5 && Point.getDistance(robotPos.position, currentSegment.getEndPoint()) < Constants.kPathPursuitTolerance) {
 				this.didFinish = true;
 			}
 		}
