@@ -35,16 +35,17 @@ public class Path {
 			// or say that the robot is done following the path
 			if (this.canMoveOnToNextSegment()) {
 				this.moveOnToNextSegment();
-			}
-		}
-		if (!this.canMoveOnToNextSegment()) {
-			if (Point.getDistance(currentSegment.getEndPoint(), currentPos) < Constants.kStopSteeringDistance) {
-				manager.freezeHeading(robotPos.heading);
+			} else { 
+				//can't move onto the next segment, but it is within tol, so 
+				if (Point.getDistance(robotPos.position, currentSegment.getEndPoint()) < Constants.kPathPursuitTolerance) {
+					this.didFinish = true;
+				}
 			}
 			
-			if (robotPos.getVelocity() < 0.5 && Point.getDistance(robotPos.position, currentSegment.getEndPoint()) < Constants.kPathPursuitTolerance) {
-				this.didFinish = true;
-			}
+			//stop the target point from becoming behind the robot
+//			if (Point.getDistance(currentSegment.getEndPoint(), currentPos) < Constants.kStopSteeringDistance) {
+//				manager.freezeHeading(robotPos.heading);
+//			}
 		}
 		
 		return manager.getVelCmd(currentSegment, robotPos);

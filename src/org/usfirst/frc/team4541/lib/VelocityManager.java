@@ -30,12 +30,13 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 			this.dt = Constants.kDefaultDt;
 		} else { 
 			// update dt based on time elapsed since last update
-//			this.dt = (System.currentTimeMillis() - lastUpdateTime) / 1000; //TODO: remove comment - just to allow speedup in simulation
+			this.dt = (System.currentTimeMillis() - lastUpdateTime) / 1000; //TODO: remove comment - just to allow speedup in simulation
 			this.updateDt(); 
 		}
 		double overallVel = this.getOverallVelocityTarget(segment, state);
 		
 		Point lookahead = segment.getLookaheadPoint(state.position, this.lookahead.getLookaheadForSpeed(state.getVelocity()));
+//		System.out.println(lookahead.getX() + "," + lookahead.getY() + "," + state); 
 		
 		ConnectionArc arc = new ConnectionArc(state, lookahead);
 		
@@ -71,7 +72,12 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 		}
 		
 		if (segment.isAcceleratingToEndpoint()) {
-			double requiredAccelToFinish = this.getAccelNeededToGetToVelByPoint(state.getVelocity(), segment.getEndVelocity(), segment.getDistanceToEndpoint(segment.getClosestPointOnSegment(state.getVelocityLookaheadPoint(dt))));
+			//TODO: use actual lookahead vs velocity lookahead?
+			Point lookahead = segment.getLookaheadPoint(state.position, this.lookahead.getLookaheadForSpeed(state.getVelocity()));
+			
+//			double requiredAccelToFinish = this.getAccelNeededToGetToVelByPoint(state.getVelocity(), segment.getEndVelocity(), segment.getDistanceToEndpoint(segment.getClosestPointOnSegment(state.getVelocityLookaheadPoint(dt))));
+			double requiredAccelToFinish = this.getAccelNeededToGetToVelByPoint(state.getVelocity(), segment.getEndVelocity(), segment.getDistanceToEndpoint(lookahead));
+
 			return this.getNextVelocity(requiredAccelToFinish, state.getVelocity(), segment.getEndVelocity());
 		}
 		if (this.shouldAccelToEndPoint(segment, state)) {

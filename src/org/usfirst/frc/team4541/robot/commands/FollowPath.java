@@ -1,5 +1,6 @@
 package org.usfirst.frc.team4541.robot.commands;
 
+import org.usfirst.frc.team4541.lib.ArcSegment;
 import org.usfirst.frc.team4541.lib.LineSegment;
 import org.usfirst.frc.team4541.lib.Path;
 import org.usfirst.frc.team4541.lib.Point;
@@ -22,7 +23,7 @@ public class FollowPath extends Command {
 //	PIDController rPID;
 //	PIDController lPID;
 	public static enum PATH_TYPE {
-		TEST_PATH
+		TEST_PATH, TEST_PATH_CURVE
 	}
 	
 	public FollowPath(PATH_TYPE pathType) {
@@ -41,10 +42,18 @@ public class FollowPath extends Command {
 		switch (pathType) {
 		case TEST_PATH: {
 			path = new Path();
-			Segment seg1 = new LineSegment(new Point(0, 0), new Point(60, 0), 18, 0);
+			Segment seg1 = new LineSegment(new Point(0, 0), new Point(60, 0), 60, 0);
 			path.addSegment(seg1);
 			return path;
-		} default: {
+		} case TEST_PATH_CURVE: {
+			path = new Path();
+			Segment seg1 = new LineSegment(new Point(0, 0), new Point(60, 0), 48, 48,    15);
+			path.addSegment(seg1);
+			Segment seg2 = new ArcSegment(new Point(60, 0), new Point(90, -30), new Point(60, -30), 48, 0);
+			path.addSegment(seg2);
+			return path;
+		}
+		default: {
 			return null;
 		}
 		}
@@ -52,20 +61,21 @@ public class FollowPath extends Command {
 	
 	@Override
 	public void execute() {
+//		RobotPos latestPos = new RobotPos(Robot.state.getPosition(),
+//				Robot.state.getHeading(), Robot.drivetrain.getRightVel(), Robot.drivetrain.getLeftVel()); //right way
 		RobotPos latestPos = new RobotPos(Robot.state.getPosition(),
-				Robot.state.getHeading(), Robot.drivetrain.getRightVel(), -Robot.drivetrain.getLeftVel());
+		Robot.state.getHeading(), Robot.drivetrain.getLeftVel(), Robot.drivetrain.getRightVel()); //opp way
 		RobotCmd cmd = this.path.update(latestPos);
 		
 		//debug print: lTarget, rTarget, lActualVel, rActualVel, RobotPosition
-		System.out.println(Robot.drivetrain.leftMotor1.getClosedLoopTarget(0) +  "," + Robot.drivetrain.rightMotor1.getClosedLoopTarget(0) + "," + Robot.drivetrain.leftMotor1.getSelectedSensorVelocity(0) + "," + Robot.drivetrain.rightMotor1.getSelectedSensorVelocity(0) + "," + Robot.state.getPosition());
+//		System.out.println(Robot.drivetrain.leftMotor1.getClosedLoopTarget(0) +  "," + Robot.drivetrain.rightMotor1.getClosedLoopTarget(0) + "," + Robot.drivetrain.leftMotor1.getSelectedSensorVelocity(0) + "," + Robot.drivetrain.rightMotor1.getSelectedSensorVelocity(0) + "," + Robot.state.getPosition());
 		
-//		Robot.drivetrain.setLeftVel(cmd.getLeftVel());
+//		Robot.drivetrain.setLeftVel(cmd.getLeftVel()); //right way
 //		Robot.drivetrain.setRightVel(cmd.getRightVel());
 		
+		Robot.drivetrain.setRightVel(cmd.getLeftVel());
 		Robot.drivetrain.setLeftVel(cmd.getRightVel());
-		Robot.drivetrain.setRightVel(-cmd.getLeftVel());
 		
-//		System.out.println(Robot.state.getPosition() + " , " + Robot.state.getHeading());
 	}
 	
 	@Override
@@ -77,7 +87,10 @@ public class FollowPath extends Command {
 	protected void end() {
 		Robot.drivetrain.setLeftVel(0);
 		Robot.drivetrain.setRightVel(0);
-		System.out.println("FINISHED PATH");
+		if (this.isFinished()) {
+			System.out.println("FINISHED PATH");
+			System.out.println(Robot.state.getPosition());
+		}
 	}
 
 }

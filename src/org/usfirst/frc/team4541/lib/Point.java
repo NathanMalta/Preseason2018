@@ -121,9 +121,9 @@ public class Point {
 	 * @return: p1 relative to p2 rotated by angle theta
 	 */
 	public static Point getP1RelativeToP2(Point p1, Point p2, double theta) {
-		double angle = theta + Math.PI / 2;  //Convert to a heading zeroed at the x axis (?)
-		double x = (p1.getX() - p2.getX()) * Math.cos(angle) + (p1.getY() - p2.getY()) * Math.sin(angle);
-		double y = -1 * (p1.getX() - p2.getX()) * Math.sin(angle) + (p1.getY() - p2.getY()) * Math.cos(angle);
+		double angle = theta;// + Math.PI / 2;  //Convert to a heading zeroed at the x axis (?)
+		double y = (p1.getX() - p2.getX()) * Math.cos(angle) + (p1.getY() - p2.getY()) * Math.sin(angle);
+		double x = -1 * (p1.getX() - p2.getX()) * Math.sin(angle) + (p1.getY() - p2.getY()) * Math.cos(angle);
 		
 		return new Point(x, y);
 	}

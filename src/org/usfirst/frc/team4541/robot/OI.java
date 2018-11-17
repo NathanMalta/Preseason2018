@@ -11,6 +11,7 @@ import java.lang.reflect.Field;
 import java.util.Hashtable;
 
 import org.usfirst.frc.team4541.robot.Constants;
+import org.usfirst.frc.team4541.robot.commands.ShiftGear;
 
 //import org.usfirst.frc.team4541.robot.commands.ShiftGear;
 
@@ -57,8 +58,8 @@ public class OI {
 	public int lastDpad = -1;
 
 	public OI() {
-//		r_bump.whenPressed(new ShiftGear(false)); // right is high
-//		l_bump.whenPressed(new ShiftGear(true)); // left is low
+		r_bump.whenPressed(new ShiftGear(false)); // right is high
+		l_bump.whenPressed(new ShiftGear(true)); // left is low
 	}
 
 	public Joystick getJoystick() {

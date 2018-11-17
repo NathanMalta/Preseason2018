@@ -19,7 +19,7 @@ public class LineSegment implements Segment {
 		this.maxVel = maxVel;
 		this.endVel = endVel;
 		
-		this.endpointAccelDistance = endpointAccelDistance;
+		this.endpointAccelDistance = endpointAccelDistance; //distance from the endpoint that the algorithm will try to be at the endpoint velocity
 	}
 	
 	public LineSegment(Point startPoint, Point endPoint, double maxVel, double endVel) {

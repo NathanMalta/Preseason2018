@@ -96,7 +96,7 @@ public class Robot extends TimedRobot {
 		this.setPeriod(Constants.kDefaultDt);
 		state.start();
 		gyro.zeroYaw();
-		new FollowPath(FollowPath.PATH_TYPE.TEST_PATH).start();
+		new FollowPath(FollowPath.PATH_TYPE.TEST_PATH_CURVE).start();
 
 	}
 
@@ -105,6 +105,9 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
+		System.out.println(state.getPosition().getX() + "," + state.getPosition().getY() + "," + drivetrain.getVel());
+//		System.out.println(drivetrain.getVel());
+
 		Scheduler.getInstance().run();
 	}
 
@@ -126,12 +129,11 @@ public class Robot extends TimedRobot {
 		//for checking if RobotState is correctly creating position
 //		System.out.println(state.getPosition() + " , " + state.getHeading());
 		//for tuning velocity PIDF - (mostly going to be I and F terms cause its velocity)
-		System.out.println(drivetrain.leftMotor1.getMotorOutputPercent() + "," + drivetrain.leftMotor1.getSelectedSensorVelocity(0)
-		+ "," + drivetrain.rightMotor1.getMotorOutputPercent() + "," + drivetrain.rightMotor1.getSelectedSensorVelocity(0));
+//		System.out.println(drivetrain.leftMotor1.getMotorOutputPercent() + "," + drivetrain.leftMotor1.getSelectedSensorVelocity(0)
+//		+ "," + drivetrain.rightMotor1.getMotorOutputPercent() + "," + drivetrain.rightMotor1.getSelectedSensorVelocity(0));
 		
 //		System.out.println(drivetrain.leftMotor1.getSelectedSensorVelocity(0) + "," + drivetrain.rightMotor1.getSelectedSensorVelocity(0));
-		
-
+		System.out.println((drivetrain.leftMotor1.get() * 1023) / drivetrain.leftMotor1.getSelectedSensorVelocity(0) + "," + (drivetrain.rightMotor1.get() * 1023) / drivetrain.rightMotor1.getSelectedSensorVelocity(0));
 		Scheduler.getInstance().run();
 	}
 

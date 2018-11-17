@@ -6,18 +6,16 @@ import edu.wpi.first.wpilibj.Joystick;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
 
+import org.usfirst.frc.team4541.lib.CavDifferentialDrive;
 import org.usfirst.frc.team4541.robot.Constants;
-import org.usfirst.frc.team4541.robot.Robot;
 import org.usfirst.frc.team4541.robot.RobotMap;
 import org.usfirst.frc.team4541.robot.commands.TankDriveWithJoystick;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.Faults;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
-import com.ctre.phoenix.motorcontrol.StickyFaults;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 
 
@@ -34,7 +32,9 @@ public class DriveTrain extends Subsystem {
 	public WPI_TalonSRX rightMotor2 = new WPI_TalonSRX(RobotMap.rightDriveMotor2);
 	private DoubleSolenoid sol;
 	
-	private DifferentialDrive drive = new DifferentialDrive(leftMotor1, rightMotor1);
+	private CavDifferentialDrive drive = new CavDifferentialDrive(leftMotor1, rightMotor1);
+	
+	private boolean mIsBrakeMode;
 
 	public DriveTrain() {
 		super();
@@ -42,8 +42,9 @@ public class DriveTrain extends Subsystem {
 		this.configTalons();
 		leftMotor2.follow(leftMotor1);
 		rightMotor2.follow(rightMotor1);
-		
 		sol = new DoubleSolenoid(RobotMap.PCM, 0, 1);
+		this.setBrakeMode(false);
+		this.setSolenoidOpen(true); //shift into low gear
 	}
 
 	/**
@@ -57,10 +58,10 @@ public class DriveTrain extends Subsystem {
 	/**
 	 * Set the current state of the gear shifting solenoid
 	 * 
-	 * @param state: the desired state of the solenoid //TODO: is high gear true or false?
+	 * @param state: the desired state of the solenoid
 	 */
-    public void setSolenoidOpen(boolean state){
-    	if (state) {
+    public void setSolenoidOpen(boolean isLow){
+    	if (isLow) {
     		sol.set(DoubleSolenoid.Value.kReverse);
     	} else {
     		sol.set(DoubleSolenoid.Value.kForward);
@@ -117,11 +118,11 @@ public class DriveTrain extends Subsystem {
 	public void configTalons() {
 		leftMotor1.setInverted(true);
 		leftMotor2.setInverted(true);
-		rightMotor1.setInverted(true);
-		rightMotor2.setInverted(true);
+		rightMotor1.setInverted(false);
+		rightMotor2.setInverted(false);
 		
-		rightMotor1.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
-		rightMotor1.setSensorPhase(true); // keep encoder and motor in phase 
+		rightMotor1.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, Constants.kTimeoutMs);
+		rightMotor1.setSensorPhase(false); // keep encoder and motor in phase 
 		
 		// set the peak, nominal outputs
 		rightMotor1.configNominalOutputForward(0, Constants.kTimeoutMs);
@@ -130,11 +131,19 @@ public class DriveTrain extends Subsystem {
 		rightMotor1.configPeakOutputReverse(-1, Constants.kTimeoutMs);
 
 		// set closed loop gains in slot0  //TODO: Tune
-		rightMotor1.config_kF(Constants.kPIDLoopIdx, 0.7, Constants.kTimeoutMs);
-		rightMotor1.config_kP(Constants.kPIDLoopIdx, 0.6, Constants.kTimeoutMs);
-		rightMotor1.config_kI(Constants.kPIDLoopIdx, 0.0, Constants.kTimeoutMs);
-		rightMotor1.config_kD(Constants.kPIDLoopIdx, 0, Constants.kTimeoutMs);
-
+		rightMotor1.config_kP(Constants.kPIDLoopIdx, Constants.kPVelocity, Constants.kTimeoutMs);
+		rightMotor1.config_kI(Constants.kPIDLoopIdx, Constants.kIVelocity, Constants.kTimeoutMs);
+		rightMotor1.config_kD(Constants.kPIDLoopIdx, Constants.kDVelocity, Constants.kTimeoutMs);
+		rightMotor1.config_kF(Constants.kPIDLoopIdx, Constants.kFVelocity, Constants.kTimeoutMs);
+		rightMotor1.config_IntegralZone(Constants.kPIDLoopIdx, Constants.kVelocityIZone, Constants.kTimeoutMs);
+		
+		rightMotor1.enableVoltageCompensation(true);
+		rightMotor1.configVoltageCompSaturation(12.0, Constants.kTimeoutMs);
+		rightMotor1.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_50Ms, Constants.kTimeoutMs);
+		rightMotor1.changeMotionControlFramePeriod(5);
+		rightMotor1.configVelocityMeasurementWindow(1, Constants.kTimeoutMs);
+		
+		
 		leftMotor1.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
 		leftMotor1.setSensorPhase(false); // keep encoder and motor in phase
 		
@@ -143,12 +152,19 @@ public class DriveTrain extends Subsystem {
 		leftMotor1.configNominalOutputReverse(0, Constants.kTimeoutMs);
 		leftMotor1.configPeakOutputForward(1, Constants.kTimeoutMs);
 		leftMotor1.configPeakOutputReverse(-1, Constants.kTimeoutMs);
-
+		
 		// set closed loop gains in slot0  //TODO: Tune
-		leftMotor1.config_kF(Constants.kPIDLoopIdx, 0.7, Constants.kTimeoutMs);
-		leftMotor1.config_kP(Constants.kPIDLoopIdx, 0.6, Constants.kTimeoutMs);
-		leftMotor1.config_kI(Constants.kPIDLoopIdx, 0.0, Constants.kTimeoutMs);
-		leftMotor1.config_kD(Constants.kPIDLoopIdx, 0, Constants.kTimeoutMs);
+		leftMotor1.config_kP(Constants.kPIDLoopIdx, Constants.kPVelocity, Constants.kTimeoutMs);
+		leftMotor1.config_kI(Constants.kPIDLoopIdx, Constants.kIVelocity, Constants.kTimeoutMs);
+		leftMotor1.config_kD(Constants.kPIDLoopIdx, Constants.kDVelocity, Constants.kTimeoutMs);
+		leftMotor1.config_kF(Constants.kPIDLoopIdx, Constants.kFVelocity, Constants.kTimeoutMs);
+		leftMotor1.config_IntegralZone(Constants.kPIDLoopIdx, Constants.kVelocityIZone, Constants.kTimeoutMs);
+		
+		leftMotor1.enableVoltageCompensation(true);
+		leftMotor1.configVoltageCompSaturation(12.0, Constants.kTimeoutMs);
+		leftMotor1.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_50Ms, Constants.kTimeoutMs);
+		leftMotor1.changeMotionControlFramePeriod(5);
+		leftMotor1.configVelocityMeasurementWindow(1, Constants.kTimeoutMs);
 	}
 	
 	/**
@@ -157,12 +173,13 @@ public class DriveTrain extends Subsystem {
 	 * @param vel: the new velocity setpoint (in/sec)
 	 */
 	public void setLeftVel(double vel) {
+		
 		// convert velocity from inches/sec to pulses/100ms
 		double targetVel = vel * Constants.kSensorUnitsPerInch / 10;
 		if (targetVel > 0) {
-			targetVel += 50; 
+			targetVel += Constants.kFrictionConstant; 
 		} else if (targetVel < 0){
-			targetVel -= 50;
+			targetVel -= Constants.kFrictionConstant;
 		}
 		
 		// set the current setpoint of the talon's PIDF Controller to the desired velocity
@@ -175,27 +192,20 @@ public class DriveTrain extends Subsystem {
 	 * @param vel: the new velocity setpoint (in/sec)
 	 */
 	public void setRightVel(double vel) {
+		
 		// convert velocity from inches/sec to pulses/100ms
 		double targetVel = vel * Constants.kSensorUnitsPerInch / 10;
 		if (targetVel > 0) {
-			targetVel += 50; 
+			targetVel += Constants.kFrictionConstant; 
 		} else if (targetVel < 0){
-			targetVel -= 50;
+			targetVel -= Constants.kFrictionConstant;
 		}
 		
 		// set the current setpoint of the talon's PIDF Controller to the desired velocity
 		rightMotor1.set(ControlMode.Velocity, targetVel);
 	}
-
-	/**
-	 * Get the velocity of the robot
-	 * 
-	 * @return velocity of the robot
-	 */
-	public double getVel() {
-		return(this.leftMotor1.getSelectedSensorVelocity(0) + this.rightMotor1.getSelectedSensorVelocity(0) / 2.0);
-	}
 	
+
 	/**
 	 * Set the current position to zero on the wheel encoders
 	 */
@@ -239,4 +249,25 @@ public class DriveTrain extends Subsystem {
 	public double getRightVel() {
 		return this.rightMotor1.getSelectedSensorVelocity(0) / Constants.kSensorUnitsPerInch * 10;
 	}
+	
+	/**
+	 * Get the velocity of the robot as a whole
+	 * 
+	 * @return velocity in inches/sec
+	 */
+	public double getVel() {
+		return this.getRightVel() + this.getLeftVel() / 2;
+	}
+	
+	public void setBrakeMode(boolean on) {
+        if (mIsBrakeMode != on) {
+            mIsBrakeMode = on;
+            NeutralMode mode = on ? NeutralMode.Brake : NeutralMode.Coast;
+            rightMotor1.setNeutralMode(mode);
+            rightMotor2.setNeutralMode(mode);
+
+            leftMotor1.setNeutralMode(mode);
+            leftMotor2.setNeutralMode(mode);
+        }
+    }
 }

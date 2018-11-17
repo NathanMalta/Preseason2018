@@ -8,14 +8,14 @@ import edu.wpi.first.wpilibj.command.Command;
  *
  */
 public class ShiftGear extends Command {
-	boolean gearHigh;
+	boolean gearLow;
     public ShiftGear(boolean state) {
-    	gearHigh = state;
+    	gearLow = state;
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	Robot.drivetrain.setSolenoidOpen(gearHigh);
+    	Robot.drivetrain.setSolenoidOpen(gearLow);
     }
 
     // Called repeatedly when this Command is scheduled to run
