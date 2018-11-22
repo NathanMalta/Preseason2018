@@ -139,7 +139,7 @@ public class DriveTrain extends Subsystem {
 		
 		rightMotor1.enableVoltageCompensation(true);
 		rightMotor1.configVoltageCompSaturation(12.0, Constants.kTimeoutMs);
-		rightMotor1.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_50Ms, Constants.kTimeoutMs);
+		rightMotor1.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, Constants.kTimeoutMs);
 		rightMotor1.changeMotionControlFramePeriod(5);
 		rightMotor1.configVelocityMeasurementWindow(1, Constants.kTimeoutMs);
 		
@@ -162,7 +162,7 @@ public class DriveTrain extends Subsystem {
 		
 		leftMotor1.enableVoltageCompensation(true);
 		leftMotor1.configVoltageCompSaturation(12.0, Constants.kTimeoutMs);
-		leftMotor1.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_50Ms, Constants.kTimeoutMs);
+		leftMotor1.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, Constants.kTimeoutMs);
 		leftMotor1.changeMotionControlFramePeriod(5);
 		leftMotor1.configVelocityMeasurementWindow(1, Constants.kTimeoutMs);
 	}

@@ -8,13 +8,19 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 	
 	boolean isHeadingFrozen;
 	double frozenHeading = 0;
-	Lookahead lookahead;
 	
-	public VelocityManager() {
+	// should recalculate the dt every cycle - true when on a robot, false when in debug mode
+	boolean recalcDt = false;
+	
+	public VelocityManager(boolean recalcDt) {
+		this.recalcDt = recalcDt;
 		this.dt = -1;
 		this.lastUpdateTime = -1;
 		this.isHeadingFrozen = false;
-		lookahead = new Lookahead(Constants.kMinLookAhead, Constants.kMaxLookAhead, Constants.kMinLookAheadSpeed, Constants.kMaxLookAheadSpeed);
+	}
+	
+	public VelocityManager() {
+		this(true);
 	}
 	
 	/*
@@ -28,14 +34,13 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 			//on the first update, setup the dt calculations
 			lastUpdateTime = System.currentTimeMillis();
 			this.dt = Constants.kDefaultDt;
-		} else { 
+		} else if (this.recalcDt){ 
 			// update dt based on time elapsed since last update
-			this.dt = (System.currentTimeMillis() - lastUpdateTime) / 1000; //TODO: remove comment - just to allow speedup in simulation
 			this.updateDt(); 
 		}
 		double overallVel = this.getOverallVelocityTarget(segment, state);
 		
-		Point lookahead = segment.getLookaheadPoint(state.position, this.lookahead.getLookaheadForSpeed(state.getVelocity()));
+		Point lookahead = segment.getLookaheadPoint(state.position, Constants.lookahead.getLookaheadForSpeed(state.getVelocity()));
 //		System.out.println(lookahead.getX() + "," + lookahead.getY() + "," + state); 
 		
 		ConnectionArc arc = new ConnectionArc(state, lookahead);
@@ -72,11 +77,10 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 		}
 		
 		if (segment.isAcceleratingToEndpoint()) {
-			//TODO: use actual lookahead vs velocity lookahead?
-			Point lookahead = segment.getLookaheadPoint(state.position, this.lookahead.getLookaheadForSpeed(state.getVelocity()));
+			Point lookahead = segment.getLookaheadPoint(state.position, Constants.lookahead.getLookaheadForSpeed(state.getVelocity()));
 			
-//			double requiredAccelToFinish = this.getAccelNeededToGetToVelByPoint(state.getVelocity(), segment.getEndVelocity(), segment.getDistanceToEndpoint(segment.getClosestPointOnSegment(state.getVelocityLookaheadPoint(dt))));
-			double requiredAccelToFinish = this.getAccelNeededToGetToVelByPoint(state.getVelocity(), segment.getEndVelocity(), segment.getDistanceToEndpoint(lookahead));
+			double requiredAccelToFinish = this.getAccelNeededToGetToVelByPoint(state.getVelocity(), segment.getEndVelocity(), segment.getDistanceToEndpoint(segment.getClosestPointOnSegment(state.getVelocityLookaheadPoint(dt))));
+//			double requiredAccelToFinish = this.getAccelNeededToGetToVelByPoint(state.getVelocity(), segment.getEndVelocity(), segment.getDistanceToEndpoint(lookahead));
 
 			return this.getNextVelocity(requiredAccelToFinish, state.getVelocity(), segment.getEndVelocity());
 		}
@@ -145,14 +149,14 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 	}
 	
 	/*
-	 * Returns the distance required to get to the segment
+	 * Returns the distance required to get to the segment, used to compute velocity
 	 * 
 	 * @param segment: the current segment the robot is following
 	 * @param state: the current position + velocity of the robot
 	 */
 	public double getDistanceRemaining(Segment segment, RobotPos state) {
-//		return segment.getDistanceToEndpoint(segment.getClosestPointOnSegment(state.getVelocityLookaheadPoint(dt)));
-		return segment.getDistanceToEndpoint(segment.getClosestPointOnSegment(segment.getLookaheadPoint(state.position, lookahead.getLookaheadForSpeed(state.getVelocity()))));
+		return segment.getDistanceToEndpoint(segment.getClosestPointOnSegment(state.getVelocityLookaheadPoint(dt)));
+//		return segment.getDistanceToEndpoint(segment.getClosestPointOnSegment(segment.getLookaheadPoint(state.position, lookahead.getLookaheadForSpeed(state.getVelocity()))));
 	}
 	
 	/*
@@ -186,6 +190,7 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 	 * Update self.dt with the current change in time between updates
 	 */
 	public void updateDt() {
+		this.dt = (System.currentTimeMillis() - lastUpdateTime) / 1000;
 		this.lastUpdateTime = System.currentTimeMillis();
 	}
 	

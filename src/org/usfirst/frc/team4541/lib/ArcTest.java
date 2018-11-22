@@ -32,9 +32,9 @@ public class ArcTest {
 			
 			double xPos = currentPos.position.getX() + (cmd.getLeftVel() + cmd.getRightVel())/2 * Constants.kDefaultDt * Math.cos(heading);
 			double yPos = currentPos.position.getY() + (cmd.getLeftVel() + cmd.getRightVel())/2 * Constants.kDefaultDt * Math.sin(heading);
-			currentPos = new RobotPos(xPos, yPos, heading, cmd.lVelDesired / 1.2, cmd.rVelDesired);
-//			System.out.println(currentPos);
-			System.out.println((lWheelVel + rWheelVel) / 2);
+			currentPos = new RobotPos(xPos, yPos, heading, cmd.rVelDesired, cmd.lVelDesired);
+			System.out.println(currentPos);
+//			System.out.println((lWheelVel + rWheelVel) / 2);
 		}
 	}
 	

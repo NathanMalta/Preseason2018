@@ -1,13 +1,15 @@
 package org.usfirst.frc.team4541.robot;
 
+import org.usfirst.frc.team4541.lib.Lookahead;
+
 public class Constants { //TODO: play with these values once we get a robot
-	public static final double kPathPursuitTolerance = 3; //in inches; get within 3 inches of the endpoint prior to moving on to the next segment
+	public static final double kPathPursuitTolerance = 1; //in inches; get within 3 inches of the endpoint prior to moving on to the next segment
 //	public static final double kMaxVelocity = 60; //(NOT CURRENTLY USED)in inches/sec; the max velocity the robot can get to when traveling a path
 //	public static final double kMaxJerk = 6; //(NOT CURRENTLY USED) in inches/sec^3; the max jerk the robot can be commanded to experience when traveling a path
 	public static final double kDefaultDt = 0.05; // in seconds; the default dt for pathfinding calculations
 	
 	public static final double kMaxAccelSpeedUp = 30; //in inches/sec^2; the max acceleration the robot can be commanded to experience when traveling a path
-	public static final double kMaxAccelTurning = 80;
+	public static final double kMaxAccelTurning = 100;
 	
 	public static final double kWheelDiameter = 6; // in inches; the diameter of the drive wheels
 	public static final double kWheelBase = 30; //in inches; the distance between the left and right drive wheels
@@ -32,6 +34,9 @@ public class Constants { //TODO: play with these values once we get a robot
 	public static final double kDVelocity = 0;//0.15; //10
 	public static final double kFVelocity = 1;//1.5//0.6; //2  //75 in/sec at 0.5 power // 53400 units/100ms
  	public static final int kVelocityIZone = 0;
+ 	
+ 	public static final Lookahead lookahead = new Lookahead(Constants.kMinLookAhead, Constants.kMaxLookAhead, Constants.kMinLookAheadSpeed, Constants.kMaxLookAheadSpeed);
+
  	
 //	public static final double kPVelocity = 0;
 //	public static final double kIVelocity = 0;

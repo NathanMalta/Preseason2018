@@ -8,9 +8,13 @@ public class Path {
 	boolean didFinish;
 	VelocityManager manager;
 	
-	public Path() {
+	public Path(boolean isDebug) {
 		didFinish = false;
-		manager = new VelocityManager();
+		manager = new VelocityManager(!isDebug);
+	}
+	
+	public Path() {
+		this(false);
 	}
 	
 	/*
@@ -28,9 +32,10 @@ public class Path {
 	 */
 	public RobotCmd update(RobotPos robotPos) {
 		Segment currentSegment = this.getCurrentSegment();
-		Point currentPos = robotPos.position;
+//		Point currentPos = robotPos.position;
+		Point lookaheadPt = currentSegment.getLookaheadPoint(robotPos.position, Constants.lookahead.getLookaheadForSpeed(robotPos.getVelocity()));
 		
-		if (Point.getDistance(currentSegment.getEndPoint(), currentPos) < Constants.kPathPursuitTolerance) {
+		if (Point.getDistance(currentSegment.getEndPoint(), lookaheadPt) < Constants.kPathPursuitTolerance) {
 			// if the current robot position is within tol of the end point, move on to the next segment
 			// or say that the robot is done following the path
 			if (this.canMoveOnToNextSegment()) {

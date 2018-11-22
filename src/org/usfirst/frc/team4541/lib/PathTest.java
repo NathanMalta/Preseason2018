@@ -28,7 +28,7 @@ public class PathTest {
 //		double distNeeded = manager.getDistanceNeededToAccel(Constants.kMaxAccel, 30, 0);
 //		System.out.println(distNeeded);
 		
-		Path path = new Path();
+		Path path = new Path(true);
 		Segment seg1 = new LineSegment(new Point(0, 0), new Point(60, 0), 48, 24,    15);
 		path.addSegment(seg1);
 		Segment seg2 = new ArcSegment(new Point(60, 0), new Point(90, 30), new Point(60, 30), 24);
@@ -75,17 +75,12 @@ public class PathTest {
 			
 			double xPos = currentPos.position.getX() + (lVel + rVel)/2 * path.manager.dt * Math.cos(heading);
 			double yPos = currentPos.position.getY() + (lVel  + rVel)/2 * path.manager.dt * Math.sin(heading);
-			currentPos = new RobotPos(xPos, yPos, heading, rVel, lVel);
+			currentPos = new RobotPos(xPos, yPos, heading, (rVel + currentPos.rVel * 3) / 4, (lVel + currentPos.lVel * 3) / 4);
 			pathTime += Constants.kDefaultDt;
-//			System.out.println(currentPos.getLeftVel() + "," + currentPos.getRightVel() + "," + currentPos.getVelocity());
+			System.out.println(currentPos);
 		}
 		System.out.println("Estimate time Required " + pathTime + " sec");
 		
-	}
-	
-	public static double ftToRad(double inches) {
-		double circum = Constants.kWheelDiameter * Math.PI;
-		return (inches / circum) * Math.PI * 2;
 	}
 
 }
