@@ -10,27 +10,19 @@ public class LineSegment implements Segment {
 	
 	boolean isAccelToEndpoint = false;
 	
-	double endpointAccelDistance;
-	
-	public LineSegment(Point startPoint, Point endPoint, double maxVel, double endVel, double endpointAccelDistance) {
+	public LineSegment(Point startPoint, Point endPoint, double maxVel, double endVel) {
 		this.startPoint = startPoint;
 		this.endPoint = endPoint;
 		
 		this.maxVel = maxVel;
 		this.endVel = endVel;
-		
-		this.endpointAccelDistance = endpointAccelDistance; //distance from the endpoint that the algorithm will try to be at the endpoint velocity
-	}
-	
-	public LineSegment(Point startPoint, Point endPoint, double maxVel, double endVel) {
-		this(startPoint, endPoint, maxVel, endVel, 0);
 	}
 	
 	public LineSegment(Point startPoint, Point endPoint, double maxVel) {
 		this(startPoint, endPoint, maxVel, maxVel);
 	}
 	
-	/*
+	/**
 	 * Gets the closest point on the line segment to the given point.  Approach was modified from
 	 * Joshua's on stack overflow:
 	 * https://stackoverflow.com/questions/849211/shortest-distance-between-a-point-and-a-line-segment
@@ -105,14 +97,6 @@ public class LineSegment implements Segment {
 		return this.isAccelToEndpoint;
 	}
 	
-	/*
-	 * returns the slope of the line
-	 */
-	public double getSlope() {
-		Point delta = Point.getDelta(this.startPoint, this.endPoint);
-		return delta.getY() / delta.getX();
-	}
-	
 	@Override
 	public Point getLookaheadPoint(Point robotPosition, double lookahead) {
 		Point closestOnSegment = this.getClosestPointOnSegment(robotPosition);
@@ -131,11 +115,6 @@ public class LineSegment implements Segment {
 		} else {
 			return p2;
 		}
-	}
-
-	@Override
-	public double getEndpointAccelDistance() {
-		return this.endpointAccelDistance;
 	}
 
 }

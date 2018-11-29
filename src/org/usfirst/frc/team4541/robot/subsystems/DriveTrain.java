@@ -14,6 +14,7 @@ import org.usfirst.frc.team4541.robot.commands.TankDriveWithJoystick;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
@@ -139,10 +140,10 @@ public class DriveTrain extends Subsystem {
 		
 		rightMotor1.enableVoltageCompensation(true);
 		rightMotor1.configVoltageCompSaturation(12.0, Constants.kTimeoutMs);
-		rightMotor1.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, Constants.kTimeoutMs);
-		rightMotor1.changeMotionControlFramePeriod(5);
+		rightMotor1.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_50Ms, Constants.kTimeoutMs);
 		rightMotor1.configVelocityMeasurementWindow(1, Constants.kTimeoutMs);
-		
+		rightMotor1.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 1, 100);
+		rightMotor1.configClosedloopRamp(Constants.kDriveVoltageRampRate, Constants.kTimeoutMs);
 		
 		leftMotor1.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
 		leftMotor1.setSensorPhase(false); // keep encoder and motor in phase
@@ -162,9 +163,10 @@ public class DriveTrain extends Subsystem {
 		
 		leftMotor1.enableVoltageCompensation(true);
 		leftMotor1.configVoltageCompSaturation(12.0, Constants.kTimeoutMs);
-		leftMotor1.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, Constants.kTimeoutMs);
-		leftMotor1.changeMotionControlFramePeriod(5);
+		leftMotor1.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_50Ms, Constants.kTimeoutMs);
 		leftMotor1.configVelocityMeasurementWindow(1, Constants.kTimeoutMs);
+		leftMotor1.configClosedloopRamp(Constants.kDriveVoltageRampRate, Constants.kTimeoutMs);
+		leftMotor1.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 1, 100);
 	}
 	
 	/**
@@ -173,7 +175,6 @@ public class DriveTrain extends Subsystem {
 	 * @param vel: the new velocity setpoint (in/sec)
 	 */
 	public void setLeftVel(double vel) {
-		
 		// convert velocity from inches/sec to pulses/100ms
 		double targetVel = vel * Constants.kSensorUnitsPerInch / 10;
 		if (targetVel > 0) {

@@ -42,7 +42,7 @@ public class Path {
 				this.moveOnToNextSegment();
 			} else { 
 				//can't move onto the next segment, but it is within tol, so 
-				if (Point.getDistance(robotPos.position, currentSegment.getEndPoint()) < Constants.kPathPursuitTolerance) {
+				if (Point.getDistance(robotPos.position, currentSegment.getEndPoint()) < Constants.kPathPursuitTolerance && robotPos.getVelocity() < 0.5) {
 					this.didFinish = true;
 				}
 			}

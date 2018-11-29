@@ -31,6 +31,12 @@ public class RobotPos {
 		return (this.rVel + this.lVel) / 2.0;
 	}
 	
+	/**
+	 * Gives an approximation of the robot's position at the next update
+	 * 
+	 * @param dt - change in time between updates
+	 * @return - expected position
+	 */
 	public Point getVelocityLookaheadPoint(double dt) {
 		// get where the robot will be next update
 		double dist = dt * this.getVelocity();
@@ -38,6 +44,16 @@ public class RobotPos {
 		// add that point to the robot's current position
 		return Point.addPoints(this.position, lookahead);
 	}
+	
+//	/**
+//	 * 
+//	 * 
+//	 * @param timeSec - seconds into the future position should be predicted for
+//	 * @return - the expected position after timeSec seconds
+//	 */
+//	public Point getExpectedPosition(double timeSec) {
+//		return null;
+//	}
 	
 	@Override
 	public String toString() {

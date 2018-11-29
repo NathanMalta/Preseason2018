@@ -23,7 +23,7 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 		this(true);
 	}
 	
-	/*
+	/**
 	 * returns a RobotCmd containing the desired left and right velocities for the wheels
 	 * 
 	 * @param segment: the current segment the robot is following
@@ -64,7 +64,7 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 	}
 	
 	
-	/*
+	/**
 	 * returns the velocity desired for the robot as a whole
 	 * 
 	 * @param segment: the current segment the robot is following
@@ -72,43 +72,66 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 	 */
 	public double getOverallVelocityTarget(Segment segment, RobotPos state) {
 		
-		if (this.isHeadingFrozen) {
-			this.getNextVelocity(Constants.kMaxAccelSpeedUp, state.getVelocity(), 0);
-		}
-		
-		if (segment.isAcceleratingToEndpoint()) {
-			Point lookahead = segment.getLookaheadPoint(state.position, Constants.lookahead.getLookaheadForSpeed(state.getVelocity()));
-			
-			double requiredAccelToFinish = this.getAccelNeededToGetToVelByPoint(state.getVelocity(), segment.getEndVelocity(), segment.getDistanceToEndpoint(segment.getClosestPointOnSegment(state.getVelocityLookaheadPoint(dt))));
-//			double requiredAccelToFinish = this.getAccelNeededToGetToVelByPoint(state.getVelocity(), segment.getEndVelocity(), segment.getDistanceToEndpoint(lookahead));
-
-			return this.getNextVelocity(requiredAccelToFinish, state.getVelocity(), segment.getEndVelocity());
-		}
-		if (this.shouldAccelToEndPoint(segment, state)) {
+//		if (this.isHeadingFrozen) {
+//			this.getNextVelocity(Constants.kMaxAccelSpeedUp, state.getVelocity(), 0);
+//		}
+//		double currentLookahead1 = Constants.lookahead.getLookaheadForSpeed(state.getVelocity());
+//		double distToCompletion1 = segment.getDistanceToEndpoint(segment.getClosestPointOnSegment(state.getVelocityLookaheadPoint(dt))) - Constants.kPathPursuitTolerance - currentLookahead1;
+//		double requiredAccelToFinish1 = this.getAccelNeededToGetToVelByPoint(state.getVelocity(), segment.getEndVelocity(), distToCompletion1);
+//		System.out.println(requiredAccelToFinish1);
+		if (!segment.isAcceleratingToEndpoint() && this.shouldAccelToEndPoint(segment, state)) {
 			//The robot must accelerate/decelerate to reach the velocity desired by the segment's endpoint
 			segment.setIsAcceleratingToEndpoint(true);
-			return this.getNextVelocity(Constants.kMaxAccelSpeedUp, state.getVelocity(), segment.getEndVelocity());
-		} else {
+		}
+		if (segment.isAcceleratingToEndpoint()) {
+			double requiredAccelToFinish;
+			if (segment.getEndVelocity() == 0) { //The robot will stop at the end of this segment, try to stop exactly at the end
+				requiredAccelToFinish = this.getAccelNeededToGetToVelByPoint(state.getVelocity(), segment.getEndVelocity(), segment.getDistanceToEndpoint(segment.getClosestPointOnSegment(state.getVelocityLookaheadPoint(dt))));
+			}
+			else { //The robot will be continuing onto another segment, reach final velocity before it switches segments
+				double currentLookahead = Constants.lookahead.getLookaheadForSpeed(state.getVelocity());
+				double distToCompletion = segment.getDistanceToEndpoint(segment.getClosestPointOnSegment(state.getVelocityLookaheadPoint(dt))) - Constants.kPathPursuitTolerance - currentLookahead;
+				if (distToCompletion < 0) {
+					return this.getNextVelocity(Constants.kMaxAccelSpeedUp, state.getVelocity(), segment.getEndVelocity());
+				}
+				requiredAccelToFinish = this.getAccelNeededToGetToVelByPoint(state.getVelocity(), segment.getEndVelocity(), distToCompletion);
+//				System.out.println("2:"+requiredAccelToFinish);
+			}
+			
+			return this.getNextVelocity(requiredAccelToFinish, state.getVelocity(), segment.getEndVelocity());
+		}
+		else {
 			//The robot must accelerate/decelerate to reach the max speed of the path
 			return this.getNextVelocity(Constants.kMaxAccelSpeedUp, state.getVelocity(), segment.getMaxVelocity());
 		}
 	}
 	
-	/*
+	/**
 	 * returns if the robot should accelerate/decelerate to get to the velocity desired at the endpoint
 	 * 
 	 * @param segment: the segment the robot is currently following
 	 * @param state: the current position + velocity of the robot
 	 */
 	public boolean shouldAccelToEndPoint(Segment segment, RobotPos state) {
-//		double remainingDist = this.getDistanceRemaining(segment, state);
-//		double distanceToAccel = this.getDistanceNeededToAccel(this.getAccelForSpeedUp(segment, state), state.getVelocity(), segment.getEndVelocity());
-//		return remainingDist <= distanceToAccel;
-		double requiredAccelToFinish = this.getAccelNeededToGetToVelByPoint(state.getVelocity(), segment.getEndVelocity(), segment.getDistanceToEndpoint(segment.getLookaheadPoint(state.position, Math.abs(state.getVelocity() * this.dt))) - segment.getEndpointAccelDistance());
+		if (segment.getEndVelocity() == segment.getMaxVelocity()) {
+			return false;
+		}
+		double requiredAccelToFinish;
+		if (segment.getEndVelocity() == 0) { //The robot will stop at the end of this segment, try to stop exactly at the end
+			requiredAccelToFinish = this.getAccelNeededToGetToVelByPoint(state.getVelocity(), segment.getEndVelocity(), segment.getDistanceToEndpoint(segment.getClosestPointOnSegment(state.getVelocityLookaheadPoint(dt))));
+		} else { //The robot will be continuing onto another segment, reach final velocity before it does
+			double currentLookahead = Constants.lookahead.getLookaheadForSpeed(state.getVelocity());
+			double distToCompletion = segment.getDistanceToEndpoint(segment.getClosestPointOnSegment(state.getVelocityLookaheadPoint(dt))) - Constants.kPathPursuitTolerance - currentLookahead;
+			if (distToCompletion < 0) {
+				return true;
+			}
+			requiredAccelToFinish = this.getAccelNeededToGetToVelByPoint(state.getVelocity(), segment.getEndVelocity(), distToCompletion);
+			
+			}
 		return requiredAccelToFinish >= Constants.kMaxAccelSpeedUp;
 	}
 	
-	/*
+	/**
 	 * returns the time (in seconds) required to accelerate/decelerate from velocity 1 to velocity 2
 	 *
 	 * @param v1: current velocity
@@ -120,46 +143,22 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 		return delta / maxSpeedAccel;
 	}
 	
-	/*
-	 * returns the acceleration required to achieve a certain velocity from the current velocity by a given
-	 * distance
+	/**
+	 * returns the acceleration required to achieve a certain velocity from the current velocity 
+	 * over a given distance
 	 * 
 	 * @param v2: current velocity
 	 * @param v2: desired velocity
 	 * @param dist: distance desired
 	 */
 	public double getAccelNeededToGetToVelByPoint(double v1, double v2, double dist) {
-		double deltaV = Math.abs(v2 - v1);
-		
-		double secondsRequired = (2 * dist) / deltaV;
-		
-		return deltaV / secondsRequired;
+		double deltaV = v2 - v1;
+		double accel = -Math.pow(deltaV, 2) / (2 * dist);
+		return Math.abs(accel);
 	}
 	
-	/*
-	 * returns the distance (in inches) required to accelerate/decelerate from velocity 1 to velocity 2
-	 *
-	 * @param v1: current velocity
-	 * @param v2: desired velocity
-	 * @param maxSpeedAccel: the max acceleration allocated to changing robot speed
-	 */
-	public double getDistanceNeededToAccel(double maxSpeedAccel, double v1, double v2) {
-		double delta = Math.abs(v1 - v2);
-		return this.getTimeNeededToAccel(maxSpeedAccel, v1, v2) * delta;
-	}
 	
-	/*
-	 * Returns the distance required to get to the segment, used to compute velocity
-	 * 
-	 * @param segment: the current segment the robot is following
-	 * @param state: the current position + velocity of the robot
-	 */
-	public double getDistanceRemaining(Segment segment, RobotPos state) {
-		return segment.getDistanceToEndpoint(segment.getClosestPointOnSegment(state.getVelocityLookaheadPoint(dt)));
-//		return segment.getDistanceToEndpoint(segment.getClosestPointOnSegment(segment.getLookaheadPoint(state.position, lookahead.getLookaheadForSpeed(state.getVelocity()))));
-	}
-	
-	/*
+	/**
 	 * Returns the closest velocity the robot can get to the desired velocity
 	 * without violating maximum acceleration constraints
 	 * 
@@ -186,7 +185,7 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 		}
 	}
 	
-	/*
+	/**
 	 * Update self.dt with the current change in time between updates
 	 */
 	public void updateDt() {
@@ -194,33 +193,12 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 		this.lastUpdateTime = System.currentTimeMillis();
 	}
 	
-	/*
-	 * Returns the closest differential the robot can get to the desired differential
-	 * without violating maximum acceleration constraints
+	/**
+	 * Stop the robot from changing heading
+	 * Prevents the robot from turning around if it overshoots the end of the last segment
 	 * 
-	 * @param currentDiff: the current velocity differential of the robot
-	 * @param desiredDiff: the desired velocity differential of the robot
-	 * @param maxTurnAccel: the max acceleration allocated to changing robot heading
+	 * @param heading - the heading to maintain for the remainder of the path
 	 */
-	public double getNextDifferential(double maxTurnAccel, double currentDiff, double desiredDiff) {
-		double delta = currentDiff - desiredDiff;
-		if (Math.abs(delta) <= (this.dt * maxTurnAccel)) {
-			// if moving to the desired velocity is allowed within acceleration constraints, 
-			// return the desired velocity
-			return desiredDiff;
-			
-		} else if (delta > 0) {
-			// The next velocity is greater than the current velocity, speed up the robot
-			return currentDiff - (this.dt * maxTurnAccel);
-		} else if (delta < 0) {
-			// The next velocity is less than the current velocity, slow down the robot
-			return currentDiff + (this.dt * maxTurnAccel);
-		} else {
-			// The next velocity is the same as the current velocity, maintain current velocity
-			return currentDiff;
-		}
-	}
-	
 	public void freezeHeading(double heading) {
 		this.isHeadingFrozen = true;
 		this.frozenHeading = heading;

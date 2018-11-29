@@ -20,8 +20,7 @@ import edu.wpi.first.wpilibj.command.Command;
 
 public class FollowPath extends Command {
 	public Path path;
-//	PIDController rPID;
-//	PIDController lPID;
+
 	public static enum PATH_TYPE {
 		TEST_PATH, TEST_PATH_CURVE
 	}
@@ -47,7 +46,7 @@ public class FollowPath extends Command {
 			return path;
 		} case TEST_PATH_CURVE: {
 			path = new Path();
-			Segment seg1 = new LineSegment(new Point(0, 0), new Point(60, 0), 48, 48,    15);
+			Segment seg1 = new LineSegment(new Point(0, 0), new Point(60, 0), 60, 48);
 			path.addSegment(seg1);
 			Segment seg2 = new ArcSegment(new Point(60, 0), new Point(90, -30), new Point(60, -30), 48, 0);
 			path.addSegment(seg2);
@@ -70,12 +69,8 @@ public class FollowPath extends Command {
 		//debug print: lTarget, rTarget, lActualVel, rActualVel, RobotPosition
 //		System.out.println(Robot.drivetrain.leftMotor1.getClosedLoopTarget(0) +  "," + Robot.drivetrain.rightMotor1.getClosedLoopTarget(0) + "," + Robot.drivetrain.leftMotor1.getSelectedSensorVelocity(0) + "," + Robot.drivetrain.rightMotor1.getSelectedSensorVelocity(0) + "," + Robot.state.getPosition());
 		
-//		Robot.drivetrain.setLeftVel(cmd.getLeftVel()); //right way
-//		Robot.drivetrain.setRightVel(cmd.getRightVel());
-		
-		Robot.drivetrain.setRightVel(cmd.getLeftVel());
-		Robot.drivetrain.setLeftVel(cmd.getRightVel());
-		
+		Robot.drivetrain.setLeftVel(cmd.getLeftVel());
+		Robot.drivetrain.setRightVel(cmd.getRightVel());
 	}
 	
 	@Override

@@ -29,11 +29,11 @@ public class PathTest {
 //		System.out.println(distNeeded);
 		
 		Path path = new Path(true);
-		Segment seg1 = new LineSegment(new Point(0, 0), new Point(60, 0), 48, 24,    15);
+		Segment seg1 = new LineSegment(new Point(0, 0), new Point(60, 0), 48, 24);
 		path.addSegment(seg1);
 		Segment seg2 = new ArcSegment(new Point(60, 0), new Point(90, 30), new Point(60, 30), 24);
 		path.addSegment(seg2);
-		Segment seg3 = new LineSegment(new Point(90, 30), new Point(90, 80), 48, 24,   15);
+		Segment seg3 = new LineSegment(new Point(90, 30), new Point(90, 80), 48, 24);
 		path.addSegment(seg3);
 		Segment seg4 = new ArcSegment(new Point(90, 80), new Point(110, 100), new Point(110, 80), 24);
 		path.addSegment(seg4);
@@ -61,21 +61,14 @@ public class PathTest {
 				e.printStackTrace();
 			}
 			RobotCmd cmd = path.update(currentPos);
-			double heading = currentPos.heading + ((cmd.getRightVel() - cmd.getLeftVel()) / Constants.kWheelBase) * path.manager.dt;
-			
-//			Random r = new Random();
-//			if (r.nextBoolean()) {
-//				heading += r.nextDouble() / 100;
-//			} else {
-//				heading -= r.nextDouble() / 100;
-//			}
+			double heading = currentPos.heading + ((cmd.getLeftVel() - cmd.getRightVel()) / Constants.kWheelBase) * path.manager.dt;
 			
 			double lVel = cmd.getLeftVel();
 			double rVel = cmd.getRightVel();
 			
 			double xPos = currentPos.position.getX() + (lVel + rVel)/2 * path.manager.dt * Math.cos(heading);
 			double yPos = currentPos.position.getY() + (lVel  + rVel)/2 * path.manager.dt * Math.sin(heading);
-			currentPos = new RobotPos(xPos, yPos, heading, (rVel + currentPos.rVel * 3) / 4, (lVel + currentPos.lVel * 3) / 4);
+			currentPos = new RobotPos(xPos, yPos, heading, rVel, lVel);
 			pathTime += Constants.kDefaultDt;
 			System.out.println(currentPos);
 		}

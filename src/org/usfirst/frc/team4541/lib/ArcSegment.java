@@ -7,7 +7,6 @@ public class ArcSegment implements Segment {
 	private Point centerPoint;
 	
 	private Point deltaStart;
-	private Point deltaEnd;
 	
 	double radius;
 	
@@ -16,9 +15,7 @@ public class ArcSegment implements Segment {
 	
 	boolean isAccelToEndpoint = false;
 	
-	double endpointAccelDistance;
-	
-	public ArcSegment(Point startPoint, Point endPoint, Point centerPoint, double maxVel, double endVel, double endpointAccelDistance) {
+	public ArcSegment(Point startPoint, Point endPoint, Point centerPoint, double maxVel, double endVel) {
 		this.startPoint = startPoint;
 		this.endPoint = endPoint;
 		this.centerPoint = centerPoint;
@@ -26,18 +23,11 @@ public class ArcSegment implements Segment {
 		this.radius = Point.getDistance(this.startPoint, this.centerPoint);
 		
 		this.deltaStart = Point.getDelta(centerPoint, startPoint);
-		this.deltaEnd = Point.getDelta(centerPoint, endPoint);
 		
 		this.maxVel = maxVel;
 		this.endVel = endVel;
 		
 		isAccelToEndpoint = false;
-		
-		this.endpointAccelDistance = endpointAccelDistance;
-	}
-	
-	public ArcSegment(Point startPoint, Point endPoint, Point centerPoint, double maxVel, double endVel) {
-		this(startPoint, endPoint, centerPoint, maxVel, endVel, 0);
 	}
 	
 	public ArcSegment(Point startPoint, Point endPoint, Point centerPoint, double maxVel) {
@@ -149,11 +139,6 @@ public class ArcSegment implements Segment {
 		} else {
 			return p2;
 		}
-	}
-
-	@Override
-	public double getEndpointAccelDistance() {
-		return this.endpointAccelDistance;
 	}
 
 }

@@ -8,6 +8,9 @@
 package org.usfirst.frc.team4541.robot;
 
 import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -69,6 +72,19 @@ public class Robot extends TimedRobot {
 		oi = new OI();
 		state = new RobotState(0, 0, 0, drivetrain.getRightPos(), drivetrain.getLeftPos());
 
+		UsbCamera cam0 = CameraServer.getInstance().startAutomaticCapture(0);
+
+		cam0.setWhiteBalanceAuto();
+		cam0.setExposureManual(50);
+		cam0.setFPS(20);
+		cam0.setResolution(330, (int)(330*(9.0/16.0)));
+		
+		UsbCamera cam1 = CameraServer.getInstance().startAutomaticCapture(1);
+		
+		cam1.setWhiteBalanceAuto();
+		cam1.setExposureManual(50);
+		cam1.setFPS(20);
+		cam1.setResolution(330, (int)(330*(9.0/16.0)));
 	}
 
 	/**
@@ -105,8 +121,9 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
-		System.out.println(state.getPosition().getX() + "," + state.getPosition().getY() + "," + drivetrain.getVel());
+//		System.out.println(state.getPosition().getX() + "," + state.getPosition().getY() + "," + drivetrain.getVel());
 //		System.out.println(drivetrain.getVel());
+		System.out.println(drivetrain.leftMotor1.getSelectedSensorVelocity(0) + "," + drivetrain.leftMotor1.getClosedLoopTarget(0) + "," + drivetrain.rightMotor1.getSelectedSensorVelocity(0) + "," + drivetrain.rightMotor1.getClosedLoopTarget(0));
 
 		Scheduler.getInstance().run();
 	}
@@ -134,6 +151,7 @@ public class Robot extends TimedRobot {
 		
 //		System.out.println(drivetrain.leftMotor1.getSelectedSensorVelocity(0) + "," + drivetrain.rightMotor1.getSelectedSensorVelocity(0));
 		System.out.println((drivetrain.leftMotor1.get() * 1023) / drivetrain.leftMotor1.getSelectedSensorVelocity(0) + "," + (drivetrain.rightMotor1.get() * 1023) / drivetrain.rightMotor1.getSelectedSensorVelocity(0));
+		
 		Scheduler.getInstance().run();
 	}
 
