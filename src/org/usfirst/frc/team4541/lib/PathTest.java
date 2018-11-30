@@ -29,16 +29,21 @@ public class PathTest {
 //		System.out.println(distNeeded);
 		
 		Path path = new Path(true);
-		Segment seg1 = new LineSegment(new Point(0, 0), new Point(60, 0), 48, 24);
+//		Segment seg1 = new LineSegment(new Point(0, 0), new Point(60, 0), 48, 24);
+//		path.addSegment(seg1);
+//		Segment seg2 = new ArcSegment(new Point(60, 0), new Point(90, 30), new Point(60, 30), 24);
+//		path.addSegment(seg2);
+//		Segment seg3 = new LineSegment(new Point(90, 30), new Point(90, 80), 48, 24);
+//		path.addSegment(seg3);
+//		Segment seg4 = new ArcSegment(new Point(90, 80), new Point(110, 100), new Point(110, 80), 24);
+//		path.addSegment(seg4);
+//		Segment seg5 = new LineSegment(new Point(110, 100), new Point(150, 100), 48, 0);
+//		path.addSegment(seg5);
+		
+		Segment seg1 = new LineSegment(new Point(0, 0), new Point(90, 0), 80, 60);
 		path.addSegment(seg1);
-		Segment seg2 = new ArcSegment(new Point(60, 0), new Point(90, 30), new Point(60, 30), 24);
+		Segment seg2 = new ArcSegment(new Point(90, 0), new Point(140, -50), new Point(90, -50), 60, 0);
 		path.addSegment(seg2);
-		Segment seg3 = new LineSegment(new Point(90, 30), new Point(90, 80), 48, 24);
-		path.addSegment(seg3);
-		Segment seg4 = new ArcSegment(new Point(90, 80), new Point(110, 100), new Point(110, 80), 24);
-		path.addSegment(seg4);
-		Segment seg5 = new LineSegment(new Point(110, 100), new Point(150, 100), 48, 0);
-		path.addSegment(seg5);
 		
 //		Segment seg1 = new LineSegment(new Point(0, 0), new Point(60, 0), 50, 5, 12);
 //		path.addSegment(seg1);

@@ -40,26 +40,32 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 		}
 		double overallVel = this.getOverallVelocityTarget(segment, state);
 		
+		if (this.isHeadingFrozen) {
+			return new RobotCmd(overallVel, overallVel);
+		}
+		
 		Point lookahead = segment.getLookaheadPoint(state.position, Constants.lookahead.getLookaheadForSpeed(state.getVelocity()));
 //		System.out.println(lookahead.getX() + "," + lookahead.getY() + "," + state); 
 		
 		ConnectionArc arc = new ConnectionArc(state, lookahead);
 		
-		double rVel = this.getNextVelocity(Constants.kMaxAccelTurning, state.getRightVel(), arc.getRightVelocityTarget(overallVel));
-		double lVel = this.getNextVelocity(Constants.kMaxAccelTurning, state.getLeftVel(), arc.getLeftVelocityTarget(overallVel));
-		
-		double rVel2 = arc.getRightVelocityTargetFromLeftVelocity(lVel);
-		double lVel2 = arc.getLeftVelocityTargetFromRightVelocity(rVel);
-		
-		double dl = Math.abs(state.lVel - lVel2);
-		double dr = Math.abs(state.rVel - rVel2);
+//		double rVel = this.getNextVelocity(Constants.kMaxAccelTurning, state.getRightVel(), arc.getRightVelocityTarget(overallVel));
+//		double lVel = this.getNextVelocity(Constants.kMaxAccelTurning, state.getLeftVel(), arc.getLeftVelocityTarget(overallVel));
+//		
+//		double rVel2 = arc.getRightVelocityTargetFromLeftVelocity(lVel);
+//		double lVel2 = arc.getLeftVelocityTargetFromRightVelocity(rVel);
+//		
+//		double dl = Math.abs(state.lVel - lVel2);
+//		double dr = Math.abs(state.rVel - rVel2);
+//
+//		if (dl < dr) {
+//			lVel = this.getNextVelocity(Constants.kMaxAccelTurning, state.getLeftVel(),lVel2);
+//		} else { 
+//			rVel = this.getNextVelocity(Constants.kMaxAccelTurning, state.getRightVel(),rVel2);
+//		}
+		double rVel = arc.getRightVelocityTarget(overallVel);
+		double lVel = arc.getLeftVelocityTarget(overallVel);
 
-		if (dl < dr) {
-			lVel = this.getNextVelocity(Constants.kMaxAccelTurning, state.getLeftVel(),lVel2);
-		} else { 
-			rVel = this.getNextVelocity(Constants.kMaxAccelTurning, state.getRightVel(),rVel2);
-		}
-		
 		return new RobotCmd(lVel, rVel);
 	}
 	
@@ -72,9 +78,9 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 	 */
 	public double getOverallVelocityTarget(Segment segment, RobotPos state) {
 		
-//		if (this.isHeadingFrozen) {
-//			this.getNextVelocity(Constants.kMaxAccelSpeedUp, state.getVelocity(), 0);
-//		}
+		if (this.isHeadingFrozen) {
+			this.getNextVelocity(Constants.kMaxAccelSpeedUp, state.getVelocity(), 0);
+		}
 //		double currentLookahead1 = Constants.lookahead.getLookaheadForSpeed(state.getVelocity());
 //		double distToCompletion1 = segment.getDistanceToEndpoint(segment.getClosestPointOnSegment(state.getVelocityLookaheadPoint(dt))) - Constants.kPathPursuitTolerance - currentLookahead1;
 //		double requiredAccelToFinish1 = this.getAccelNeededToGetToVelByPoint(state.getVelocity(), segment.getEndVelocity(), distToCompletion1);

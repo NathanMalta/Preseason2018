@@ -6,6 +6,7 @@ import org.usfirst.frc.team4541.robot.Constants;
 public class Path {
 	ArrayList<Segment> segmentList = new ArrayList<Segment>();
 	boolean didFinish;
+	
 	VelocityManager manager;
 	
 	public Path(boolean isDebug) {
@@ -17,14 +18,16 @@ public class Path {
 		this(false);
 	}
 	
-	/*
+	/**
 	 * adds a segment to the path
+	 * 
+	 * @param segment: the segment 
 	 */
 	public void addSegment(Segment segment) {
 		segmentList.add(segment);
 	}
 	
-	/*
+	/**
 	 * updates which segment of the path the robot is currently driving on and creates a
 	 * RobotCmd containing left and right wheel velocities to make the robot stay on the path
 	 * 
@@ -42,15 +45,15 @@ public class Path {
 				this.moveOnToNextSegment();
 			} else { 
 				//can't move onto the next segment, but it is within tol, so 
-				if (Point.getDistance(robotPos.position, currentSegment.getEndPoint()) < Constants.kPathPursuitTolerance && robotPos.getVelocity() < 0.5) {
+				if (Point.getDistance(robotPos.position, currentSegment.getEndPoint()) < Constants.kPathPursuitFinishTolerance && robotPos.getVelocity() < 2) {
 					this.didFinish = true;
 				}
 			}
 			
 			//stop the target point from becoming behind the robot
-//			if (Point.getDistance(currentSegment.getEndPoint(), currentPos) < Constants.kStopSteeringDistance) {
-//				manager.freezeHeading(robotPos.heading);
-//			}
+			if (Point.getDistance(currentSegment.getEndPoint(), robotPos.position) < Constants.kStopSteeringDistance) {
+				manager.freezeHeading(robotPos.heading);
+			}
 		}
 		
 		return manager.getVelCmd(currentSegment, robotPos);

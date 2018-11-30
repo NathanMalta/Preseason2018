@@ -22,7 +22,7 @@ public class FollowPath extends Command {
 	public Path path;
 
 	public static enum PATH_TYPE {
-		TEST_PATH, TEST_PATH_CURVE
+		TEST_PATH, TEST_PATH_CURVE, TEST_PATH_THICC_CURVE
 	}
 	
 	public FollowPath(PATH_TYPE pathType) {
@@ -46,9 +46,20 @@ public class FollowPath extends Command {
 			return path;
 		} case TEST_PATH_CURVE: {
 			path = new Path();
-			Segment seg1 = new LineSegment(new Point(0, 0), new Point(60, 0), 60, 48);
+			Segment seg1 = new LineSegment(new Point(0, 0), new Point(60, 0), 60, 60);
 			path.addSegment(seg1);
-			Segment seg2 = new ArcSegment(new Point(60, 0), new Point(90, -30), new Point(60, -30), 48, 0);
+			Segment seg2 = new ArcSegment(new Point(60, 0), new Point(90, -30), new Point(60, -30), 60);
+			path.addSegment(seg2);
+			Segment seg3 = new ArcSegment(new Point(90, -30), new Point(120, -60), new Point(120, -30), 60);
+			path.addSegment(seg3);
+			Segment seg4 = new LineSegment(new Point(120, -60), new Point(170, -60), 60, 0);
+			path.addSegment(seg4);
+			return path;
+		} case TEST_PATH_THICC_CURVE: {
+			path = new Path();
+			Segment seg1 = new LineSegment(new Point(0, 0), new Point(90, 0), 60);
+			path.addSegment(seg1);
+			Segment seg2 = new ArcSegment(new Point(90, 0), new Point(140, -50), new Point(90, -50), 60, 0);
 			path.addSegment(seg2);
 			return path;
 		}
@@ -68,6 +79,7 @@ public class FollowPath extends Command {
 		
 		//debug print: lTarget, rTarget, lActualVel, rActualVel, RobotPosition
 //		System.out.println(Robot.drivetrain.leftMotor1.getClosedLoopTarget(0) +  "," + Robot.drivetrain.rightMotor1.getClosedLoopTarget(0) + "," + Robot.drivetrain.leftMotor1.getSelectedSensorVelocity(0) + "," + Robot.drivetrain.rightMotor1.getSelectedSensorVelocity(0) + "," + Robot.state.getPosition());
+		System.out.println(Robot.drivetrain.getVel());
 		
 		Robot.drivetrain.setLeftVel(cmd.getLeftVel());
 		Robot.drivetrain.setRightVel(cmd.getRightVel());

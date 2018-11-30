@@ -119,6 +119,7 @@ public class DriveTrain extends Subsystem {
 	public void configTalons() {
 		leftMotor1.setInverted(true);
 		leftMotor2.setInverted(true);
+		
 		rightMotor1.setInverted(false);
 		rightMotor2.setInverted(false);
 		
@@ -165,8 +166,8 @@ public class DriveTrain extends Subsystem {
 		leftMotor1.configVoltageCompSaturation(12.0, Constants.kTimeoutMs);
 		leftMotor1.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_50Ms, Constants.kTimeoutMs);
 		leftMotor1.configVelocityMeasurementWindow(1, Constants.kTimeoutMs);
-		leftMotor1.configClosedloopRamp(Constants.kDriveVoltageRampRate, Constants.kTimeoutMs);
 		leftMotor1.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 1, 100);
+		leftMotor1.configClosedloopRamp(Constants.kDriveVoltageRampRate, Constants.kTimeoutMs);
 	}
 	
 	/**

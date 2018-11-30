@@ -121,10 +121,6 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
-//		System.out.println(state.getPosition().getX() + "," + state.getPosition().getY() + "," + drivetrain.getVel());
-//		System.out.println(drivetrain.getVel());
-		System.out.println(drivetrain.leftMotor1.getSelectedSensorVelocity(0) + "," + drivetrain.leftMotor1.getClosedLoopTarget(0) + "," + drivetrain.rightMotor1.getSelectedSensorVelocity(0) + "," + drivetrain.rightMotor1.getClosedLoopTarget(0));
-
 		Scheduler.getInstance().run();
 	}
 
@@ -148,10 +144,7 @@ public class Robot extends TimedRobot {
 		//for tuning velocity PIDF - (mostly going to be I and F terms cause its velocity)
 //		System.out.println(drivetrain.leftMotor1.getMotorOutputPercent() + "," + drivetrain.leftMotor1.getSelectedSensorVelocity(0)
 //		+ "," + drivetrain.rightMotor1.getMotorOutputPercent() + "," + drivetrain.rightMotor1.getSelectedSensorVelocity(0));
-		
-//		System.out.println(drivetrain.leftMotor1.getSelectedSensorVelocity(0) + "," + drivetrain.rightMotor1.getSelectedSensorVelocity(0));
-		System.out.println((drivetrain.leftMotor1.get() * 1023) / drivetrain.leftMotor1.getSelectedSensorVelocity(0) + "," + (drivetrain.rightMotor1.get() * 1023) / drivetrain.rightMotor1.getSelectedSensorVelocity(0));
-		
+				
 		Scheduler.getInstance().run();
 	}
 
