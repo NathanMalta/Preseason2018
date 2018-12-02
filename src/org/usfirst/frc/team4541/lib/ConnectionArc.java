@@ -7,18 +7,31 @@ public class ConnectionArc {
 	Point endPoint;
 	double radius;
 	boolean isTurningRight;
+	boolean isReversed;
 
-	public ConnectionArc(RobotPos rPos, Point endPoint) {
+	public ConnectionArc(RobotPos rPos, Point endPoint, boolean isReversed) {
 		this.startPoint = rPos.position;
 		this.endPoint = endPoint;
-
-		Point robotRelativeGoal = Point.getP1RelativeToP2(this.endPoint, this.startPoint, rPos.heading);
-
-		if (robotRelativeGoal.getX() == 0) {
-			this.radius = Double.MAX_VALUE;
+		this.isReversed = isReversed;
+		Point robotRelativeGoal;
+		
+		if (this.isReversed) {
+			robotRelativeGoal = Point.getP1RelativeToP2(this.endPoint, this.startPoint, rPos.heading - Math.PI);
 		} else {
+			robotRelativeGoal = Point.getP1RelativeToP2(this.endPoint, this.startPoint, rPos.heading);
+		}
+		
+		if (MathHelper.areApproxEqual(robotRelativeGoal.getX(), 0) && robotRelativeGoal.getY() > 0) { 
+			//The robot is co-linear with the target and the point is in front of the robot
+			this.radius = Double.MAX_VALUE;
+		} else if (MathHelper.areApproxEqual(robotRelativeGoal.getX(), 0) && robotRelativeGoal.getY() < 0) {
+			//The robot is co-linear with the target and the point is in behind the robot, conduct a tight turn around
+			this.radius = 1;
+		}  else {
+			//The robot should turn to face the next point
 			this.radius = Math.pow(robotRelativeGoal.getHypot(), 2) / (2 * Math.abs(robotRelativeGoal.getX()));
 		}
+		
 		if (robotRelativeGoal.getX() < 0) {
 			this.isTurningRight = true;
 		} else {

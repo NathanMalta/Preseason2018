@@ -6,16 +6,18 @@ import org.usfirst.frc.team4541.robot.Constants;
 public class Path {
 	ArrayList<Segment> segmentList = new ArrayList<Segment>();
 	boolean didFinish;
+	boolean isReversed;
+	double maxAccel;
 	
 	VelocityManager manager;
 	
-	public Path(boolean isDebug) {
+	public Path(boolean isDebug, boolean isReversed, double maxAccel) {
 		didFinish = false;
-		manager = new VelocityManager(!isDebug);
+		manager = new VelocityManager(isDebug, isReversed);
 	}
 	
 	public Path() {
-		this(false);
+		this(false, false, Constants.kMaxAccelSpeedUp);
 	}
 	
 	/**
@@ -45,7 +47,7 @@ public class Path {
 				this.moveOnToNextSegment();
 			} else { 
 				//can't move onto the next segment, but it is within tol, so 
-				if (Point.getDistance(robotPos.position, currentSegment.getEndPoint()) < Constants.kPathPursuitFinishTolerance && robotPos.getVelocity() < 2) {
+				if (Point.getDistance(robotPos.position, currentSegment.getEndPoint()) < Constants.kPathPursuitFinishTolerance && Math.abs(robotPos.getVelocity()) < 2) {
 					this.didFinish = true;
 				}
 			}

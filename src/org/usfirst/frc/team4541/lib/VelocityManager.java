@@ -11,16 +11,14 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 	
 	// should recalculate the dt every cycle - true when on a robot, false when in debug mode
 	boolean recalcDt = false;
+	boolean isReversed = false;
 	
-	public VelocityManager(boolean recalcDt) {
-		this.recalcDt = recalcDt;
+	public VelocityManager(boolean isDebug, boolean isReversed) {
+		this.recalcDt = !isDebug;
+		this.isReversed = isReversed;
 		this.dt = -1;
 		this.lastUpdateTime = -1;
 		this.isHeadingFrozen = false;
-	}
-	
-	public VelocityManager() {
-		this(true);
 	}
 	
 	/**
@@ -40,15 +38,22 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 		}
 		double overallVel = this.getOverallVelocityTarget(segment, state);
 		
+		if (this.isReversed) {
+		}
+		
 		if (this.isHeadingFrozen) {
 			return new RobotCmd(overallVel, overallVel);
 		}
-		
+//		if (isReversed) {
+//			state.setHeading(state.heading + Math.PI);
+//		}
 		Point lookahead = segment.getLookaheadPoint(state.position, Constants.lookahead.getLookaheadForSpeed(state.getVelocity()));
 //		System.out.println(lookahead.getX() + "," + lookahead.getY() + "," + state); 
 		
-		ConnectionArc arc = new ConnectionArc(state, lookahead);
+		ConnectionArc arc = new ConnectionArc(state, lookahead, isReversed);
 		
+		
+		//TODO: DOUBLE CHECK ON ROBOT WITH FIXED R/L MOTOR PARAMS
 //		double rVel = this.getNextVelocity(Constants.kMaxAccelTurning, state.getRightVel(), arc.getRightVelocityTarget(overallVel));
 //		double lVel = this.getNextVelocity(Constants.kMaxAccelTurning, state.getLeftVel(), arc.getLeftVelocityTarget(overallVel));
 //		
@@ -65,8 +70,12 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 //		}
 		double rVel = arc.getRightVelocityTarget(overallVel);
 		double lVel = arc.getLeftVelocityTarget(overallVel);
-
-		return new RobotCmd(lVel, rVel);
+		
+		if (isReversed) {  //when isReversed, flip wheel velocities and inverse them.
+			return new RobotCmd(rVel, lVel);
+		} else {
+			return new RobotCmd(lVel, rVel);
+		}
 	}
 	
 	
@@ -81,10 +90,7 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 		if (this.isHeadingFrozen) {
 			this.getNextVelocity(Constants.kMaxAccelSpeedUp, state.getVelocity(), 0);
 		}
-//		double currentLookahead1 = Constants.lookahead.getLookaheadForSpeed(state.getVelocity());
-//		double distToCompletion1 = segment.getDistanceToEndpoint(segment.getClosestPointOnSegment(state.getVelocityLookaheadPoint(dt))) - Constants.kPathPursuitTolerance - currentLookahead1;
-//		double requiredAccelToFinish1 = this.getAccelNeededToGetToVelByPoint(state.getVelocity(), segment.getEndVelocity(), distToCompletion1);
-//		System.out.println(requiredAccelToFinish1);
+
 		if (!segment.isAcceleratingToEndpoint() && this.shouldAccelToEndPoint(segment, state)) {
 			//The robot must accelerate/decelerate to reach the velocity desired by the segment's endpoint
 			segment.setIsAcceleratingToEndpoint(true);
@@ -92,23 +98,44 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 		if (segment.isAcceleratingToEndpoint()) {
 			double requiredAccelToFinish;
 			if (segment.getEndVelocity() == 0) { //The robot will stop at the end of this segment, try to stop exactly at the end
-				requiredAccelToFinish = this.getAccelNeededToGetToVelByPoint(state.getVelocity(), segment.getEndVelocity(), segment.getDistanceToEndpoint(segment.getClosestPointOnSegment(state.getVelocityLookaheadPoint(dt))));
+				if (isReversed) {
+					requiredAccelToFinish = this.getAccelNeededToGetToVelByPoint(state.getVelocity(), -1 * segment.getEndVelocity(), segment.getDistanceToEndpoint(segment.getClosestPointOnSegment(state.getVelocityLookaheadPoint(dt))));
+				} else {
+					requiredAccelToFinish = this.getAccelNeededToGetToVelByPoint(state.getVelocity(), segment.getEndVelocity(), segment.getDistanceToEndpoint(segment.getClosestPointOnSegment(state.getVelocityLookaheadPoint(dt))));
+				}
 			}
 			else { //The robot will be continuing onto another segment, reach final velocity before it switches segments
 				double currentLookahead = Constants.lookahead.getLookaheadForSpeed(state.getVelocity());
 				double distToCompletion = segment.getDistanceToEndpoint(segment.getClosestPointOnSegment(state.getVelocityLookaheadPoint(dt))) - Constants.kPathPursuitTolerance - currentLookahead;
 				if (distToCompletion < 0) {
-					return this.getNextVelocity(Constants.kMaxAccelSpeedUp, state.getVelocity(), segment.getEndVelocity());
+					if (isReversed) {
+						return this.getNextVelocity(Constants.kMaxAccelSpeedUp, state.getVelocity(), -1 * segment.getEndVelocity());
+					} else {
+						return this.getNextVelocity(Constants.kMaxAccelSpeedUp, state.getVelocity(), segment.getEndVelocity());
+					}
 				}
-				requiredAccelToFinish = this.getAccelNeededToGetToVelByPoint(state.getVelocity(), segment.getEndVelocity(), distToCompletion);
-//				System.out.println("2:"+requiredAccelToFinish);
+				if (isReversed) {
+					requiredAccelToFinish = this.getAccelNeededToGetToVelByPoint(state.getVelocity(), -1 * segment.getEndVelocity(), distToCompletion);
+
+				} else {
+					requiredAccelToFinish = this.getAccelNeededToGetToVelByPoint(state.getVelocity(), segment.getEndVelocity(), distToCompletion);
+				}
+			}
+			if (isReversed) {
+				return this.getNextVelocity(requiredAccelToFinish, state.getVelocity(), -1 * segment.getEndVelocity());
+			} else{
+				return this.getNextVelocity(requiredAccelToFinish, state.getVelocity(), segment.getEndVelocity());
 			}
 			
-			return this.getNextVelocity(requiredAccelToFinish, state.getVelocity(), segment.getEndVelocity());
 		}
 		else {
 			//The robot must accelerate/decelerate to reach the max speed of the path
-			return this.getNextVelocity(Constants.kMaxAccelSpeedUp, state.getVelocity(), segment.getMaxVelocity());
+			if (isReversed) {
+				return this.getNextVelocity(Constants.kMaxAccelSpeedUp, state.getVelocity(), -1 * segment.getMaxVelocity());
+			} else {
+				return this.getNextVelocity(Constants.kMaxAccelSpeedUp, state.getVelocity(), segment.getMaxVelocity());
+			}
+			
 		}
 	}
 	
@@ -131,8 +158,12 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 			if (distToCompletion < 0) {
 				return true;
 			}
-			requiredAccelToFinish = this.getAccelNeededToGetToVelByPoint(state.getVelocity(), segment.getEndVelocity(), distToCompletion);
-			
+			if (isReversed) {
+				requiredAccelToFinish = this.getAccelNeededToGetToVelByPoint(state.getVelocity(), -1 * segment.getEndVelocity(), distToCompletion);
+			} else { 
+				requiredAccelToFinish = this.getAccelNeededToGetToVelByPoint(state.getVelocity(), segment.getEndVelocity(), distToCompletion);
+			}
+						
 			}
 		return requiredAccelToFinish >= Constants.kMaxAccelSpeedUp;
 	}

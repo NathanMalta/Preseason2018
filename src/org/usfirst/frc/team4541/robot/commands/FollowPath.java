@@ -71,10 +71,9 @@ public class FollowPath extends Command {
 	
 	@Override
 	public void execute() {
-//		RobotPos latestPos = new RobotPos(Robot.state.getPosition(),
-//				Robot.state.getHeading(), Robot.drivetrain.getRightVel(), Robot.drivetrain.getLeftVel()); //right way
 		RobotPos latestPos = new RobotPos(Robot.state.getPosition(),
-		Robot.state.getHeading(), Robot.drivetrain.getLeftVel(), Robot.drivetrain.getRightVel()); //opp way
+				Robot.state.getHeading(), Robot.drivetrain.getRightVel(), Robot.drivetrain.getLeftVel()); //right way
+
 		RobotCmd cmd = this.path.update(latestPos);
 		
 		//debug print: lTarget, rTarget, lActualVel, rActualVel, RobotPosition

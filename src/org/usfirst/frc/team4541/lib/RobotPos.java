@@ -31,6 +31,14 @@ public class RobotPos {
 		return (this.rVel + this.lVel) / 2.0;
 	}
 	
+	public void setHeading(double heading) {
+		this.heading = MathHelper.angleToNegPiToPi(heading);
+	}
+	
+	public double getHeading() {
+		return this.heading;
+	}
+	
 	/**
 	 * Gives an approximation of the robot's position at the next update
 	 * 
@@ -44,16 +52,6 @@ public class RobotPos {
 		// add that point to the robot's current position
 		return Point.addPoints(this.position, lookahead);
 	}
-	
-//	/**
-//	 * 
-//	 * 
-//	 * @param timeSec - seconds into the future position should be predicted for
-//	 * @return - the expected position after timeSec seconds
-//	 */
-//	public Point getExpectedPosition(double timeSec) {
-//		return null;
-//	}
 	
 	@Override
 	public String toString() {

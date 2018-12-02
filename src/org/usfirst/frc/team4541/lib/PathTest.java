@@ -28,7 +28,7 @@ public class PathTest {
 //		double distNeeded = manager.getDistanceNeededToAccel(Constants.kMaxAccel, 30, 0);
 //		System.out.println(distNeeded);
 		
-		Path path = new Path(true);
+		Path path = new Path(true, true, Constants.kMaxAccelSpeedUp);
 //		Segment seg1 = new LineSegment(new Point(0, 0), new Point(60, 0), 48, 24);
 //		path.addSegment(seg1);
 //		Segment seg2 = new ArcSegment(new Point(60, 0), new Point(90, 30), new Point(60, 30), 24);
@@ -40,10 +40,10 @@ public class PathTest {
 //		Segment seg5 = new LineSegment(new Point(110, 100), new Point(150, 100), 48, 0);
 //		path.addSegment(seg5);
 		
-		Segment seg1 = new LineSegment(new Point(0, 0), new Point(90, 0), 80, 60);
-		path.addSegment(seg1);
-		Segment seg2 = new ArcSegment(new Point(90, 0), new Point(140, -50), new Point(90, -50), 60, 0);
-		path.addSegment(seg2);
+//		Segment seg1 = new LineSegment(new Point(0, 0), new Point(90, 0), 80, 60);
+//		path.addSegment(seg1);
+//		Segment seg2 = new ArcSegment(new Point(90, 0), new Point(140, -50), new Point(90, -50), 60, 0);
+//		path.addSegment(seg2);
 		
 //		Segment seg1 = new LineSegment(new Point(0, 0), new Point(60, 0), 50, 5, 12);
 //		path.addSegment(seg1);
@@ -56,7 +56,16 @@ public class PathTest {
 //		Segment seg5 = new LineSegment(new Point(50, 240), new Point(0, 240), 30, 0);
 //		path.addSegment(seg5);
 		
-		RobotPos currentPos = new RobotPos(0,0, 0, 0,0);
+		Segment seg1 = new LineSegment(new Point(0, 0), new Point(60, 0), 60, 60);
+		path.addSegment(seg1);
+		Segment seg2 = new ArcSegment(new Point(60, 0), new Point(90, -30), new Point(60, -30), 60);
+		path.addSegment(seg2);
+		Segment seg3 = new ArcSegment(new Point(90, -30), new Point(120, -60), new Point(120, -30), 60);
+		path.addSegment(seg3);
+		Segment seg4 = new LineSegment(new Point(120, -60), new Point(170, -60), 60, 0);
+		path.addSegment(seg4);
+		
+		RobotPos currentPos = new RobotPos(0,0, Math.PI, 0,0);
 		
 		double pathTime = 0;
 		while (!path.isFinished()) {
