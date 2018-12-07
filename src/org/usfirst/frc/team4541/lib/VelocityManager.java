@@ -38,17 +38,10 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 		}
 		double overallVel = this.getOverallVelocityTarget(segment, state);
 		
-		if (this.isReversed) {
-		}
-		
 		if (this.isHeadingFrozen) {
 			return new RobotCmd(overallVel, overallVel);
 		}
-//		if (isReversed) {
-//			state.setHeading(state.heading + Math.PI);
-//		}
 		Point lookahead = segment.getLookaheadPoint(state.position, Constants.lookahead.getLookaheadForSpeed(state.getVelocity()));
-//		System.out.println(lookahead.getX() + "," + lookahead.getY() + "," + state); 
 		
 		ConnectionArc arc = new ConnectionArc(state, lookahead, isReversed);
 		
@@ -71,7 +64,7 @@ public class VelocityManager { //creates a trapezoidal velocity curve for the ro
 		double rVel = arc.getRightVelocityTarget(overallVel);
 		double lVel = arc.getLeftVelocityTarget(overallVel);
 		
-		if (isReversed) {  //when isReversed, flip wheel velocities and inverse them.
+		if (isReversed) {  //when isReversed, flip wheel velocities
 			return new RobotCmd(rVel, lVel);
 		} else {
 			return new RobotCmd(lVel, rVel);

@@ -148,8 +148,13 @@ public class RobotState {
 	}
 	
 	public void zero() {
-		this.xPos = 0;
-		this.yPos = 0;
+		mutex.lock();
+		try {
+			xPos = 0;
+			yPos = 0;
+		} finally {
+			mutex.unlock();
+		}
 	}
 
 }

@@ -39,9 +39,12 @@ import org.usfirst.frc.team4541.robot.Constants;
 
 import org.usfirst.frc.team4541.robot.OI.TRIG_MODE;
 import org.usfirst.frc.team4541.robot.commands.FollowPath;
+import org.usfirst.frc.team4541.robot.commands.PathGroup;
 import org.usfirst.frc.team4541.robot.subsystems.DriveTrain;
 
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.kauailabs.navx.frc.AHRS;
+import org.usfirst.frc.team4541.robot.commands.FollowPath.PATH_TYPE;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -60,6 +63,7 @@ public class Robot extends TimedRobot {
 	public static DriveTrain drivetrain;
 
 	public static RobotState state;
+	public WPI_TalonSRX elevatorMotor = new WPI_TalonSRX(RobotMap.elevatorMotor);
 	
 	/**
 	 * This function is run when the robot is first started up and should be used
@@ -101,6 +105,7 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void disabledPeriodic() {
+		System.out.println(elevatorMotor.getSelectedSensorPosition(0));
 		Scheduler.getInstance().run();
 	}
 
@@ -112,7 +117,9 @@ public class Robot extends TimedRobot {
 		this.setPeriod(Constants.kDefaultDt);
 		state.start();
 		gyro.zeroYaw();
-		new FollowPath(FollowPath.PATH_TYPE.TEST_PATH_CURVE).start();
+		Robot.state.zero();
+		new PathGroup().start();
+//		new FollowPath(PATH_TYPE.TEST_PATH_REVERSE).start();
 
 	}
 

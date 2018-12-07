@@ -176,6 +176,10 @@ public class DriveTrain extends Subsystem {
 	 * @param vel: the new velocity setpoint (in/sec)
 	 */
 	public void setLeftVel(double vel) {
+		// Add acceleration term
+		double accel = (vel - this.getLeftVel()) / Constants.kDefaultDt;
+		vel += accel * Constants.kAVelocity;
+				
 		// convert velocity from inches/sec to pulses/100ms
 		double targetVel = vel * Constants.kSensorUnitsPerInch / 10;
 		if (targetVel > 0) {
@@ -194,6 +198,9 @@ public class DriveTrain extends Subsystem {
 	 * @param vel: the new velocity setpoint (in/sec)
 	 */
 	public void setRightVel(double vel) {
+		// Add acceleration term
+		double accel = (vel - this.getRightVel()) / Constants.kDefaultDt;
+		vel += accel * Constants.kAVelocity;
 		
 		// convert velocity from inches/sec to pulses/100ms
 		double targetVel = vel * Constants.kSensorUnitsPerInch / 10;

@@ -35,6 +35,7 @@ public class Constants { //TODO: play with these values once we get a robot
 	public static final double kDVelocity = 25;//0.15; //10
 	public static final double kFVelocity = 0.9;//1.5//0.6; //2  //75 in/sec at 0.5 power // 53400 units/100ms
  	public static final int kVelocityIZone = 0;
+ 	public static final double kAVelocity = 0.0; // TODO: Tune/Test
  	public static final double kDriveVoltageRampRate = 0.0;
  	
  	public static final Lookahead lookahead = new Lookahead(Constants.kMinLookAhead, Constants.kMaxLookAhead, Constants.kMinLookAheadSpeed, Constants.kMaxLookAheadSpeed);
