@@ -1,19 +1,15 @@
 package org.usfirst.frc.team4541.lib;
 
 import org.usfirst.frc.team4541.robot.Constants;
-import org.usfirst.frc.team4541.robot.commands.FollowPath;
-
-import edu.wpi.first.wpilibj.PIDController;
 
 public class ArcTest {
 	
-	/*
+	/**
 	 * A class which helped test getClosestPointOnSegment with the help of Desmos Graphing Calculator
 	 * https://www.desmos.com/calculator/qdsqwrsrke
 	 */
 	public static void main(String[] args) {
 		RobotPos currentPos = new RobotPos(0,0, 0, 0,0);
-		double turnRadius = 10;
 		double currentVel = 20;
 		
 		ConnectionArc arc = new ConnectionArc(20, true);

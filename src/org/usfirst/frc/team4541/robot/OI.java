@@ -7,26 +7,12 @@
 
 package org.usfirst.frc.team4541.robot;
 
-import java.lang.reflect.Field;
-import java.util.Hashtable;
-
-import org.usfirst.frc.team4541.robot.Constants;
 import org.usfirst.frc.team4541.robot.commands.ShiftGear;
 
 //import org.usfirst.frc.team4541.robot.commands.ShiftGear;
 
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.PIDSource;
-import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
-import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.Scheduler;
-import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-
-import java.util.Hashtable;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -64,31 +50,6 @@ public class OI {
 
 	public Joystick getJoystick() {
 		return joy;
-	}
-
-	public PIDSource getPIDSource(SENSOR sensor) {
-		return new PIDSource() {
-
-			@Override
-			public void setPIDSourceType(PIDSourceType pidSource) {
-			}
-
-			@Override
-			public PIDSourceType getPIDSourceType() {
-				return PIDSourceType.kDisplacement;
-			}
-
-			@Override
-			public double pidGet() {
-				switch (sensor) {
-//				case ENCODER_RIGHT_WHEELS:
-//					return Robot.drivetrain.getRightTalon().getSelectedSensorPosition(0);
-//				case ENCODER_LEFT_WHEELS:
-//					return Robot.drivetrain.getLeftTalon().getSelectedSensorPosition(0);
-				}
-				return 0;
-			}
-		};
 	}
 
 	public double addDeadZone(double input) {

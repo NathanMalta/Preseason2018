@@ -8,43 +8,21 @@
 package org.usfirst.frc.team4541.robot;
 
 import edu.wpi.cscore.UsbCamera;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.CameraServer;
-import edu.wpi.first.wpilibj.CounterBase.EncodingType;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.Scheduler;
-import edu.wpi.first.wpilibj.command.Subsystem;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import org.usfirst.frc.team4541.lib.LineSegment;
-import org.usfirst.frc.team4541.lib.Path;
-import org.usfirst.frc.team4541.lib.Point;
-import org.usfirst.frc.team4541.lib.RobotCmd;
-import org.usfirst.frc.team4541.lib.RobotPos;
-import org.usfirst.frc.team4541.lib.Segment;
 import org.usfirst.frc.team4541.profiling.RobotState;
 
 
 import org.usfirst.frc.team4541.robot.Constants;
 
-import org.usfirst.frc.team4541.robot.OI.TRIG_MODE;
-import org.usfirst.frc.team4541.robot.commands.FollowPath;
 import org.usfirst.frc.team4541.robot.commands.PathGroup;
 import org.usfirst.frc.team4541.robot.subsystems.DriveTrain;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.kauailabs.navx.frc.AHRS;
-import org.usfirst.frc.team4541.robot.commands.FollowPath.PATH_TYPE;
 
 /**
  * The VM is configured to automatically run this class, and to call the

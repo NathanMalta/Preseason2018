@@ -128,7 +128,6 @@ public class CavDifferentialDrive extends RobotDriveBase {
    * @param zRotation The robot's rotation rate around the Z axis [-1.0..1.0]. Clockwise is
    *                  positive.
    */
-  @SuppressWarnings("ParameterName")
   public void arcadeDrive(double xSpeed, double zRotation) {
     arcadeDrive(xSpeed, zRotation, true);
   }
@@ -141,7 +140,6 @@ public class CavDifferentialDrive extends RobotDriveBase {
    *                      positive.
    * @param squaredInputs If set, decreases the input sensitivity at low speeds.
    */
-  @SuppressWarnings("ParameterName")
   public void arcadeDrive(double xSpeed, double zRotation, boolean squaredInputs) {
     if (!m_reported) {
       HAL.report(tResourceType.kResourceType_RobotDrive, 2, tInstances.kRobotDrive_ArcadeStandard);
@@ -206,7 +204,6 @@ public class CavDifferentialDrive extends RobotDriveBase {
    * @param isQuickTurn If set, overrides constant-curvature turning for
    *                    turn-in-place maneuvers.
    */
-  @SuppressWarnings("ParameterName")
   public void curvatureDrive(double xSpeed, double zRotation, boolean isQuickTurn) {
     if (!m_reported) {
       // HAL.report(tResourceType.kResourceType_RobotDrive, 2, tInstances.kRobotDrive_Curvature);

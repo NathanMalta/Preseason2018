@@ -34,7 +34,7 @@ public class ArcSegment implements Segment {
 		this(startPoint, endPoint, centerPoint, maxVel, maxVel);
 	}
 	
-	/*
+	/**
 	 * Gets the closest point on the arc segment to the given point.  Approach was modified from
 	 * Team 254's on github:
 	 * https://github.com/Team254/FRC-2017-Public/blob/master/src/com/team254/lib/util/control/PathSegment.java

@@ -1,12 +1,6 @@
 package org.usfirst.frc.team4541.lib;
 
-import java.util.Random;
-
 import org.usfirst.frc.team4541.robot.Constants;
-import org.usfirst.frc.team4541.robot.commands.FollowPath;
-
-import edu.wpi.first.wpilibj.PIDController;
-
 public class PathTest {
 	
 	/*

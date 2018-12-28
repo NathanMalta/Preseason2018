@@ -1,7 +1,5 @@
 package org.usfirst.frc.team4541.lib;
 
-import org.usfirst.frc.team4541.robot.Constants;
-
 public class RobotPos {
 	Point position;
 	double heading; //heading in radians
