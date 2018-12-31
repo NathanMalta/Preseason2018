@@ -1,6 +1,7 @@
-package frc.lib.pathPursuit;
+package frc.lib;
 
 import frc.lib.MathHelper;
+import frc.lib.pathPursuit.Point;
 
 public class RobotPos {
 	public Point position;

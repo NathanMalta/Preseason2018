@@ -1,6 +1,8 @@
 package frc.lib.pathPursuit;
 
 import java.util.ArrayList;
+
+import frc.lib.RobotPos;
 import frc.robot.Constants;
 
 public class Path {

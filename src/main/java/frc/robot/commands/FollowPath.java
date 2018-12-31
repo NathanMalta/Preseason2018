@@ -5,7 +5,7 @@ import frc.lib.pathPursuit.LineSegment;
 import frc.lib.pathPursuit.Path;
 import frc.lib.pathPursuit.Point;
 import frc.lib.pathPursuit.RobotCmd;
-import frc.lib.pathPursuit.RobotPos;
+import frc.lib.RobotPos;
 import frc.lib.pathPursuit.Segment;
 import frc.robot.Constants;
 import frc.robot.Robot;
@@ -75,14 +75,14 @@ public class FollowPath extends Command {
 	
 	@Override
 	public void execute() {
-		RobotPos latestPos = new RobotPos(Robot.state.getPosition(),
-				Robot.state.getHeading(), Robot.drivetrain.getRightVel(), Robot.drivetrain.getLeftVel()); //right way
+		RobotPos latestPos = new RobotPos(Robot.estimator.getPosition(),
+				Robot.estimator.getHeading(), Robot.drivetrain.getRightVel(), Robot.drivetrain.getLeftVel()); //right way
 
 		RobotCmd cmd = this.path.update(latestPos);
 		
 		//debug print: lTarget, rTarget, lActualVel, rActualVel, RobotPosition
 //		System.out.println(Robot.drivetrain.leftMotor1.getClosedLoopTarget(0) +  "," + Robot.drivetrain.rightMotor1.getClosedLoopTarget(0) + "," + Robot.drivetrain.leftMotor1.getSelectedSensorVelocity(0) + "," + Robot.drivetrain.rightMotor1.getSelectedSensorVelocity(0) + "," + Robot.state.getPosition());
-		System.out.println(Robot.state.getX() + "," + Robot.state.getY());
+		System.out.println(Robot.estimator.getX() + "," + Robot.estimator.getY());
 		
 		Robot.drivetrain.setLeftVel(cmd.getLeftVel());
 		Robot.drivetrain.setRightVel(cmd.getRightVel());
@@ -99,7 +99,7 @@ public class FollowPath extends Command {
 		Robot.drivetrain.setRightVel(0);
 		if (this.isFinished()) {
 			System.out.println("FINISHED PATH");
-			System.out.println(Robot.state.getPosition());
+			System.out.println(Robot.estimator.getPosition());
 		}
 	}
 

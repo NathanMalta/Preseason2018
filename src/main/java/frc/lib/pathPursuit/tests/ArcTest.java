@@ -1,6 +1,7 @@
 package frc.lib.pathPursuit.tests;
 
 import frc.robot.Constants;
+import frc.lib.RobotPos;
 import frc.lib.pathPursuit.*;
 
 public class ArcTest {

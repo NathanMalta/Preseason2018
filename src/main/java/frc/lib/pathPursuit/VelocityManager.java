@@ -1,5 +1,6 @@
 package frc.lib.pathPursuit;
 
+import frc.lib.RobotPos;
 import frc.robot.Constants;
 
 public class VelocityManager { //creates a trapezoidal velocity curve for the robot to follow

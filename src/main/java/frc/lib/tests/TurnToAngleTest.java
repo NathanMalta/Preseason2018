@@ -3,7 +3,7 @@ package frc.lib.tests;
 import frc.robot.Constants;
 import frc.lib.MathHelper;
 import frc.lib.VelocityTrapezoid;
-import frc.lib.pathPursuit.RobotPos;
+import frc.lib.RobotPos;
 
 public class TurnToAngleTest {
 

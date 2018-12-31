@@ -2,6 +2,7 @@ package frc.lib.pathPursuit;
 
 import frc.robot.Constants;
 import frc.lib.MathHelper;
+import frc.lib.RobotPos;
 
 public class ConnectionArc {
 	Point startPoint;

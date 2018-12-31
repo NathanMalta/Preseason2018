@@ -35,7 +35,7 @@ public class Robot extends TimedRobot {
 
 	public static DriveTrain drivetrain;
 
-	public static RobotState state;
+	public static RobotPosEstimator estimator;
 	
 	/**
 	 * This function is run when the robot is first started up and should be used
@@ -46,7 +46,7 @@ public class Robot extends TimedRobot {
 		gyro = new AHRS(SPI.Port.kMXP);
 		drivetrain = new DriveTrain();
 		oi = new OI();
-		state = new RobotState(0, 0, 0, drivetrain.getRightPos(), drivetrain.getLeftPos());
+		estimator = new RobotPosEstimator(0, 0, 0, drivetrain.getRightPos(), drivetrain.getLeftPos());
 
 		UsbCamera cam0 = CameraServer.getInstance().startAutomaticCapture(0);
 		cam0.setWhiteBalanceAuto();
@@ -70,7 +70,7 @@ public class Robot extends TimedRobot {
 	public void disabledInit() {
 		Scheduler.getInstance().removeAll();
 		drivetrain.configTalons();
-		state.end();
+		estimator.end();
 	}
 
 	@Override
@@ -81,9 +81,9 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void autonomousInit() {
-		state.start();
+		estimator.start();
 		gyro.zeroYaw();
-		Robot.state.zero();
+		Robot.estimator.zero();
 
 		Command forwardAndReverse = new PathGroup();
 		forwardAndReverse.start();
@@ -100,7 +100,7 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void teleopInit() {
-		state.end();
+		estimator.end();
 		gyro.setAngleAdjustment(0);
 		drivetrain.leftMotor1.enableVoltageCompensation(true);
 		drivetrain.leftMotor2.enableVoltageCompensation(true);

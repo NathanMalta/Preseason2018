@@ -1,5 +1,6 @@
 package frc.lib.pathPursuit.tests;
 
+import frc.lib.RobotPos;
 import frc.lib.pathPursuit.*;
 import frc.robot.Constants;
 

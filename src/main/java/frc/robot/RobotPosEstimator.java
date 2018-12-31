@@ -6,7 +6,7 @@ import frc.lib.MathHelper;
 import frc.lib.pathPursuit.Point;
 import frc.robot.Robot;
 
-public class RobotState {
+public class RobotPosEstimator {
 
 	double xPos = 0;
 	double yPos = 0;
@@ -21,7 +21,7 @@ public class RobotState {
 	
 	private volatile boolean running = false;
 
-	public RobotState(double x, double y, double h, double rWT, double lWT) {
+	public RobotPosEstimator(double x, double y, double h, double rWT, double lWT) {
 		xPos = x; // in inches
 		yPos = y; // in inches
 		heading = h; // in radians
